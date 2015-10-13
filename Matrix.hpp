@@ -38,7 +38,8 @@ public:
                 if (this->M[a][b]!=m.M[a][b]) return false;
         return true;
     }
-    bool operator!=(const Matrix& m) {
+    
+    inline bool operator!=(const Matrix& m) {
         return !(*this==m);
     }
     
@@ -57,6 +58,7 @@ private:
     double Random();
     double Mult_Row_by_Column(std::vector<double>row, std::vector<double> col, long size);
     long rows, cols;
+        //'M' is a vector of vectors that holds all the values
     std::vector< std::vector<double> > M, _tmp;
     std::vector<double> _t;
 };

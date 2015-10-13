@@ -12,6 +12,19 @@
 
 #include "Matrix.hpp"
 
+Matrix::Matrix(long rows, long cols) {
+    long a;
+    this->rows=rows, this->cols=cols;
+    this->M.resize(rows);
+    for (a=0;a<rows;++a) this->M[a].resize(cols);
+}
+
+Matrix::~Matrix() {
+    long a;
+    for (a=0; a<rows; a++) M[a].clear();
+    M.clear();
+}
+
     // multiply a row of one matrix by a column of another matrix
 double Matrix::Mult_Row_by_Column(std::vector<double> row, std::vector<double> col, long size) {
     double res; long a;
@@ -54,12 +67,7 @@ Matrix& Matrix::operator=(Matrix const& m) {
     if (this!=&m) {
         this->rows=m.rows;
         this->cols=m.cols;
-        long a,b;
-        for (a=0; a<this->rows; a++) {
-            for (b=0; b<this->cols; b++) {
-                this->M[a][b]=m.M[a][b];
-            }
-        }
+        this->M=m.M;
     }
     return *this;
 }
@@ -68,13 +76,6 @@ Matrix& Matrix::operator=(Matrix const& m) {
     // generate a random number
 double Matrix::Random() {
     return (double)rand()/(double)10000000;//RAND_MAX;
-}
-
-Matrix::Matrix(long rows, long cols) {
-    long a;
-    this->rows=rows, this->cols=cols;
-    this->M.resize(rows);
-    for (a=0;a<rows;++a) this->M[a].resize(cols);
 }
 
 void Matrix::FillRandom(){
@@ -92,7 +93,7 @@ void Matrix::FillZero(){
 }
 
 void Matrix::Reshape(long rows, long cols) {
-    if (this->rows==rows && this->cols==cols) return;
+    if (this->rows==rows && this->cols==cols) return; //no need to do anything here
     if (this->rows > rows) {
         M.resize(rows);
         this->rows=rows;
@@ -115,10 +116,4 @@ void Matrix::Reshape(long rows, long cols) {
         }
         this->cols=cols;
     }
-}
-
-Matrix::~Matrix() {
-    long a;
-    for (a=0; a<rows; a++) M[a].clear();
-    M.clear();
 }

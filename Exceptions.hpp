@@ -9,16 +9,12 @@
 #ifndef Exceptions_hpp
 #define Exceptions_hpp
 
-#include <exception>
-#include <stdexcept>
-
 class SizeException
 {
 public:
-    SizeException(const char * msg) {
-        this->m=msg;
-    }
-    virtual const char* what () const throw ()
+    SizeException();
+    SizeException(const char * msg);
+    virtual const char* what() const throw()
     {
         return this->m;
     }

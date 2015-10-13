@@ -7,3 +7,11 @@
 //
 
 #include "Exceptions.hpp"
+
+SizeException::SizeException() {
+    this->m="Size mismatch";
+}
+
+SizeException::SizeException(const char * msg) {
+    this->m=msg;
+}
