@@ -1,6 +1,5 @@
 //
 //  Matrix.hpp
-//  ANN
 //
 //  Created by ForceBru on 11.10.15.
 //  Copyright © 2015 ForceBru. All rights reserved.
@@ -28,8 +27,13 @@ public:
     void FillZero();
     void Reshape(long rows, long cols);
     Matrix& operator=(const Matrix& m);
+    Matrix operator+(const Matrix& right);
+    Matrix operator+=(const Matrix& right);
+    Matrix operator-(const Matrix& right);
+    Matrix operator-=(const Matrix& right);
     Matrix operator*(const Matrix& right);
     Matrix operator*(const int& right);
+    Matrix operator/(const int& right);
     bool operator==(const Matrix& m) {
         long a,b;
         if (this->rows!=m.rows || this->cols != m.cols) return false;

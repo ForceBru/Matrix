@@ -17,39 +17,44 @@ using namespace std;
 int main(int argc, const char * argv[]) {
     
     srand((unsigned int)time(NULL));
-    unsigned long D;
     
         //create some matrices of size (rows, columns)
     Matrix a(3,4);
+    Matrix aHat(3,4);
     Matrix b(4,2);
     Matrix c(3,2);
-    Matrix OK=c; //no need to initialize, just assign a value
     
         //fill matrices with random values
     a.FillRandom();
+    aHat=a;
     b.FillRandom();
     
         //outputting is easy
     cout << "A:\n" << a << endl;
     cout << "B:\n" << b << endl;
     
-    try{
+    try {
             //multiply two matrices (of appropriate size!)
-        OK=a*b;
         cout << "Multiplying matrices..." << endl;
-        cout << "Started multiplying this " << MAX_TIMES << " times..." << endl;
+        c=a*b;
+        cout << c << endl;
         
-        time_t st=time(NULL);
-        for (D=0; D<MAX_TIMES; ++D) {
-            c=a*b;
-            if (c!=OK) {
-                cout << "That's an error!" << endl;
-            }
-        }
-        cout << c;
-        cout << "Done in " << difftime(time(NULL), st) << " seconds" << endl;
-    } catch (SizeException const& e){
+    } catch (const SizeException& e){
             //exception is thrown if the matrices are not of the appropriate size
+        cout << "Caught exception: " << e.what() << endl;
+    }
+    
+    try {
+            //add to matrices easily
+        cout << "Adding matrices..." << endl;
+        aHat+=a;
+            //and then substract
+        aHat-=a;
+        
+            //now aHat should be equal to a
+        if (aHat != a) cout << "That's an error!" << endl;
+        else cout << "Test passed" << endl;
+    } catch (const SizeException& e) {
         cout << "Caught exception: " << e.what() << endl;
     }
     

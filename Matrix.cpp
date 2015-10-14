@@ -33,6 +33,61 @@ double Matrix::Mult_Row_by_Column(std::vector<double> row, std::vector<double> c
     return res;
 }
 
+Matrix Matrix::operator+(const Matrix& right) {
+    if (this->rows != right.rows || this->cols != right.cols) {
+        throw SizeException("Size mismatch while adding matrices!");
+    }
+    Matrix ret=*this;
+    long a, b;
+    for (a=0; a<rows; ++a) {
+        for (b=0; b<cols; ++b) {
+            ret.M[a][b]+=right.M[a][b];
+        }
+    }
+    return ret;
+}
+
+Matrix Matrix::operator+=(const Matrix& right) {
+    if (this->rows != right.rows || this->cols != right.cols) {
+        std::cout << this->rows << "  " << right.rows << std::endl;
+        throw SizeException("Size mismatch while adding matrices!");
+    }
+    long a, b;
+    for (a=0; a<rows; ++a) {
+        for (b=0; b<cols; ++b) {
+            this->M[a][b]+=right.M[a][b];
+        }
+    }
+    return *this;
+}
+
+Matrix Matrix::operator-(const Matrix& right) {
+    if (this->rows != right.rows || this->cols != right.cols) {
+        throw SizeException("Size mismatch while substracting matrices!");
+    }
+    Matrix ret=*this;
+    long a, b;
+    for (a=0; a<rows; ++a) {
+        for (b=0; b<cols; ++b) {
+            ret.M[a][b]-=right.M[a][b];
+        }
+    }
+    return ret;
+}
+
+Matrix Matrix::operator-=(const Matrix& right) {
+    if (this->rows != right.rows || this->cols != right.cols) {
+        throw SizeException("Size mismatch while substracting matrices!");
+    }
+    long a, b;
+    for (a=0; a<rows; ++a) {
+        for (b=0; b<cols; ++b) {
+            this->M[a][b]-=right.M[a][b];
+        }
+    }
+    return *this;
+}
+
 
     // multiply a matrix by another matrix
 Matrix Matrix::operator*(const Matrix& right) {
@@ -61,6 +116,10 @@ Matrix Matrix::operator*(const int& right) {
     return res;
 }
 
+Matrix Matrix::operator/(const int& right) {
+    return (*this)*(1.0/(double)right);
+}
+
 
     // assign a matrix to another matrix
 Matrix& Matrix::operator=(Matrix const& m) {
@@ -68,6 +127,7 @@ Matrix& Matrix::operator=(Matrix const& m) {
         this->rows=m.rows;
         this->cols=m.cols;
         this->M=m.M;
+        this->Reshape(this->rows, this->cols);
     }
     return *this;
 }
