@@ -1,6 +1,6 @@
-# Matrix
 [![Build Status](https://travis-ci.org/ForceBru/Matrix.svg?branch=master)](https://travis-ci.org/ForceBru/Matrix)
 
+# Matrix
 User-friendly way to perform operations with matrices.
 
 > ###Warning!
