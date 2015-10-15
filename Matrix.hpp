@@ -26,6 +26,11 @@ public:
     void FillRandom();
     void FillZero();
     void Reshape(long rows, long cols);
+    Matrix T();
+    long Rows() {return this->rows;}
+    long Cols() {return this->cols;}
+    Matrix Transpose() {return this->T();}
+    
     Matrix& operator=(const Matrix& m);
     Matrix operator+(const Matrix& right);
     Matrix operator+=(const Matrix& right);

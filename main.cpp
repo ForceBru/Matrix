@@ -10,7 +10,6 @@
 
 #include "Matrix.hpp"
 
-#define MAX_TIMES 1000000
 
 using namespace std;
 
@@ -62,6 +61,9 @@ int main(int argc, const char * argv[]) {
     c.Reshape(2, 3);
     
     cout << c << endl;
+    
+        //transpose a matrix
+    cout << a.T() << endl; //or a.Transpose()
     
     return 0;
 }

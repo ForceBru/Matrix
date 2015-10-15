@@ -25,6 +25,15 @@ Matrix::~Matrix() {
     M.clear();
 }
 
+Matrix Matrix::T() {
+    Matrix tmp(this->cols, this->rows);
+    long a,b;
+    for (a=0; a<cols; ++a)
+        for (b=0; b<rows; ++b)
+            tmp.M[a][b]=this->M[b][a];
+    return tmp;
+}
+
     // multiply a row of one matrix by a column of another matrix
 double Matrix::Mult_Row_by_Column(std::vector<double> row, std::vector<double> col, long size) {
     double res; long a;
@@ -34,57 +43,48 @@ double Matrix::Mult_Row_by_Column(std::vector<double> row, std::vector<double> c
 }
 
 Matrix Matrix::operator+(const Matrix& right) {
-    if (this->rows != right.rows || this->cols != right.cols) {
+    if (this->rows != right.rows || this->cols != right.cols)
         throw SizeException("Size mismatch while adding matrices!");
-    }
+    
     Matrix ret=*this;
     long a, b;
-    for (a=0; a<rows; ++a) {
-        for (b=0; b<cols; ++b) {
+    for (a=0; a<rows; ++a)
+        for (b=0; b<cols; ++b)
             ret.M[a][b]+=right.M[a][b];
-        }
-    }
     return ret;
 }
 
 Matrix Matrix::operator+=(const Matrix& right) {
-    if (this->rows != right.rows || this->cols != right.cols) {
-        std::cout << this->rows << "  " << right.rows << std::endl;
+    if (this->rows != right.rows || this->cols != right.cols)
         throw SizeException("Size mismatch while adding matrices!");
-    }
+    
     long a, b;
-    for (a=0; a<rows; ++a) {
-        for (b=0; b<cols; ++b) {
+    for (a=0; a<rows; ++a)
+        for (b=0; b<cols; ++b)
             this->M[a][b]+=right.M[a][b];
-        }
-    }
     return *this;
 }
 
 Matrix Matrix::operator-(const Matrix& right) {
-    if (this->rows != right.rows || this->cols != right.cols) {
+    if (this->rows != right.rows || this->cols != right.cols)
         throw SizeException("Size mismatch while substracting matrices!");
-    }
+    
     Matrix ret=*this;
     long a, b;
-    for (a=0; a<rows; ++a) {
-        for (b=0; b<cols; ++b) {
+    for (a=0; a<rows; ++a)
+        for (b=0; b<cols; ++b)
             ret.M[a][b]-=right.M[a][b];
-        }
-    }
     return ret;
 }
 
 Matrix Matrix::operator-=(const Matrix& right) {
-    if (this->rows != right.rows || this->cols != right.cols) {
+    if (this->rows != right.rows || this->cols != right.cols)
         throw SizeException("Size mismatch while substracting matrices!");
-    }
+    
     long a, b;
-    for (a=0; a<rows; ++a) {
-        for (b=0; b<cols; ++b) {
+    for (a=0; a<rows; ++a)
+        for (b=0; b<cols; ++b)
             this->M[a][b]-=right.M[a][b];
-        }
-    }
     return *this;
 }
 
@@ -93,6 +93,7 @@ Matrix Matrix::operator-=(const Matrix& right) {
 Matrix Matrix::operator*(const Matrix& right) {
     if (cols!=right.rows)
         throw SizeException("Size mismatch while multiplying matrices");
+    
     long a,b,c,d;
     Matrix res(rows,right.cols);
     if (_t.size()!=cols) _t.resize(cols);
