@@ -1,1 +1,2 @@
-
+language: cpp
+script: $CC Matrix.cpp Exception.cpp main.cpp
