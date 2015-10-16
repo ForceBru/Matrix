@@ -16,7 +16,7 @@ It's planned to distribute _Matrix_ as a library, but as for now, it's distribut
 ###Compilation
 First of all, you need to clone this repo to your computer (or just download and unpack the `.zip` file). Then enter the directory with source you've downloaded and run:
 
-    gcc *.c -o some_file
+    g++ *.cpp -o some_file
 
 Then run `./some_file` to see how _Matrix_ works. 
 
