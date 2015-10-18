@@ -20,6 +20,7 @@
 
 class Matrix {
 public:
+    Matrix();
     Matrix(long rows, long cols);
     ~Matrix();
     
@@ -30,6 +31,7 @@ public:
     long Rows() {return this->rows;}
     long Cols() {return this->cols;}
     Matrix Transpose() {return this->T();}
+    Matrix Identity();
     
     Matrix& operator=(const Matrix& m);
     Matrix operator+(const Matrix& right);
@@ -68,7 +70,7 @@ private:
     double Mult_Row_by_Column(std::vector<double>row, std::vector<double> col, long size);
     long rows, cols;
         //'M' is a vector of vectors that holds all the values
-    std::vector< std::vector<double> > M, _tmp;
+    std::vector< std::vector<double> > M, _Transposed, _Identity;
     std::vector<double> _t;
 };
 

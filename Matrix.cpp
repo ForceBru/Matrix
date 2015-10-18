@@ -12,11 +12,19 @@
 
 #include "Matrix.hpp"
 
+Matrix::Matrix() {
+    this->rows=this->cols=0;
+}
+
 Matrix::Matrix(long rows, long cols) {
     long a;
     this->rows=rows, this->cols=cols;
     this->M.resize(rows);
     for (a=0;a<rows;++a) this->M[a].resize(cols);
+    if (this->rows==this->cols) {
+        this->_Identity.resize(rows);
+        for (a=0;a<rows;++a) this->_Identity[a].resize(cols);
+    }
 }
 
 Matrix::~Matrix() {
@@ -33,6 +41,26 @@ Matrix Matrix::T() {
         for (b=0; b<rows; ++b)
             tmp.M[a][b]=this->M[b][a];
     return tmp;
+}
+
+Matrix Matrix::Identity() {
+    if (this->rows != this-> cols) {
+        throw SizeException("Matrix must be square to have an identity matrix");
+        return Matrix();
+    }
+    long a, b, c;
+    this->_Identity.resize(rows);
+    for (a=0;a<rows;++a) this->_Identity[a].resize(cols);
+    for (a=0, c=0; a< this->rows; a++, c++) {
+        for (b=0; b<this->cols; b++) {
+            if (b==c) this->_Identity[a][b]=1.0;
+            else this->_Identity[a][b]=0.0;
+        }
+    }
+    Matrix k(rows,rows);
+    k.M=this->_Identity;
+    
+    return k;
 }
 
     // multiply a row of one matrix by a column of another matrix

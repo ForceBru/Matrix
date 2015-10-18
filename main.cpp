@@ -19,7 +19,7 @@ int main(int argc, const char * argv[]) {
     
         //create some matrices of size (rows, columns)
     Matrix a(3,4);
-    Matrix aHat(3,4);
+    Matrix aHat;
     Matrix b(4,2);
     Matrix c(3,2);
     
@@ -64,6 +64,14 @@ int main(int argc, const char * argv[]) {
     
         //transpose a matrix
     cout << a.T() << endl; //or a.Transpose()
+    
+    a.Reshape(3, 3);
+    
+    try {
+        cout << a.Identity() << endl;
+    } catch (const SizeException& e) {
+        cout << "Caught exception: " << e.what() << endl;
+    }
     
     return 0;
 }
