@@ -23,3 +23,6 @@ Then run `./some_file` to see how _Matrix_ works.
 ##Any examples, please?
 Well, `main.cpp` is an example. You need to compile it and that's all.
 
+##Dependencies and requirements
+Absolutely _no dependencies_ except for a C/C++ runtime. Requires a C++ compiler to be built. 
+
