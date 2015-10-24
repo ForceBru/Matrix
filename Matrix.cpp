@@ -53,14 +53,27 @@ Matrix Matrix::Identity() {
     for (a=0;a<rows;++a) this->_Identity[a].resize(cols);
     for (a=0, c=0; a< this->rows; a++, c++) {
         for (b=0; b<this->cols; b++) {
-            if (b==c) this->_Identity[a][b]=1.0;
-            else this->_Identity[a][b]=0.0;
+            this->_Identity[a][b]=(b==c)?1:0;
         }
     }
     Matrix k(rows,rows);
     k.M=this->_Identity;
     
     return k;
+}
+
+Matrix exp(Matrix A){
+    if (A.rows != A.cols) {
+        throw SizeException("Matrix must be square to be used as power of e");
+        return Matrix();
+    }
+    Matrix E=A.Identity();
+    long k, i;
+
+    for (k=0; k<A.rows; k++)
+        for (i = 0; i < A.rows; i++)
+            E.M[k][i]=exp(A.M[k][i]);
+    return E;
 }
 
     // multiply a row of one matrix by a column of another matrix
@@ -71,7 +84,16 @@ double Matrix::Mult_Row_by_Column(std::vector<double> row, std::vector<double> c
     return res;
 }
 
-Matrix Matrix::operator+(const Matrix& right) {
+Matrix Matrix::operator+(const int& right) const {
+    Matrix ret=*this;
+    long a, b;
+    for (a=0; a<rows; ++a)
+        for (b=0; b<cols; ++b)
+            ret.M[a][b]+=right;
+    return ret;
+}
+
+Matrix Matrix::operator+(const Matrix& right) const{
     if (this->rows != right.rows || this->cols != right.cols)
         throw SizeException("Size mismatch while adding matrices!");
     
@@ -94,7 +116,11 @@ Matrix Matrix::operator+=(const Matrix& right) {
     return *this;
 }
 
-Matrix Matrix::operator-(const Matrix& right) {
+Matrix Matrix::operator-() const{
+    return (*this)*(-1);
+}
+
+Matrix Matrix::operator-(const Matrix& right) const{
     if (this->rows != right.rows || this->cols != right.cols)
         throw SizeException("Size mismatch while substracting matrices!");
     
@@ -136,7 +162,7 @@ Matrix Matrix::operator*(const Matrix& right) {
 
 
     // multiply a matrix by an integer
-Matrix Matrix::operator*(const int& right) {
+Matrix Matrix::operator*(const int& right) const{
     Matrix res(rows,cols);
     
     long a,b;
@@ -146,8 +172,21 @@ Matrix Matrix::operator*(const int& right) {
     return res;
 }
 
-Matrix Matrix::operator/(const int& right) {
+Matrix Matrix::operator/(const int& right) const{
     return (*this)*(1.0/(double)right);
+}
+
+Matrix Matrix::operator/(const Matrix& right) const {
+    if (cols!=right.cols || rows!=right.rows)
+        throw SizeException("Size mismatch while dividing matrices");
+    
+    long a,b;
+    Matrix res=*this;
+    for (a=0; a<rows; ++a)
+        for (b=0; b<cols; ++b) {
+            res.M[a][b]/=right.M[a][b];
+        }
+    return res;
 }
 
 
@@ -164,15 +203,19 @@ Matrix& Matrix::operator=(Matrix const& m) {
 
 
     // generate a random number
-double Matrix::Random() {
-    return (double)rand()/(double)10000000;//RAND_MAX;
+double Matrix::Random(long min, long max) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(min, max);
+    
+    return dis(gen);
 }
 
-void Matrix::FillRandom(){
+void Matrix::FillRandom(long min, long max){
     long a,b;
     for (a=0;a<rows;++a)
         for (b=0;b<cols;++b)
-            M[a][b]=Random();
+            M[a][b]=Random(min, max);
 }
 
 void Matrix::FillZero(){

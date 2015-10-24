@@ -24,9 +24,9 @@ int main(int argc, const char * argv[]) {
     Matrix c(3,2);
     
         //fill matrices with random values
-    a.FillRandom();
+    a.FillRandom(0,1);
     aHat=a;
-    b.FillRandom();
+    b.FillRandom(0,1);
     
         //outputting is easy
     cout << "A:\n" << a << endl;
@@ -68,10 +68,37 @@ int main(int argc, const char * argv[]) {
     a.Reshape(3, 3);
     
     try {
+        cout << "Identity matrix of a is" << endl;
         cout << a.Identity() << endl;
     } catch (const SizeException& e) {
         cout << "Caught exception: " << e.what() << endl;
     }
+
+    try {
+        a.FillRandom(0,1);
+        cout << " Matrix a:"<< endl;
+        cout << a << endl;
+        cout << " Matrix -a:"<< endl;
+        cout << -a << endl;
+        cout << "exp(a) is" << endl;
+        cout << exp(a) << endl;
+        cout << " Matrix 1/a:"<< endl;
+        cout << 1/a << endl;
+    } catch (const SizeException& e) {
+        cout << "Caught exception: " << e.what() << endl;
+    }
+    
+    try {
+        cout << "Dividing b by a:" << endl;
+        b.Reshape(a.Rows(), a.Cols());
+        b.FillRandom(0,1);
+        cout << b/a << endl;
+    } catch (const SizeException& e) {
+        cout << "Caught exception: " << e.what() << endl;
+    }
+    
+    
+    cout << 1/(1+exp(-a)) << endl;
     
     return 0;
 }
