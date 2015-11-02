@@ -78,6 +78,35 @@ The most complete example is `main.cpp` itself. Here is a list of all mathematic
   
   cout << exp(a) << endl;
   ```
+ - negation
+  ```cpp
+  Matrix a(2, 4);
+  
+  a.FillRandom();
+  
+    //too easy
+  cout << -a << endl;
+  ```
+  
+##Vectorizing functions
+It's very easy to vectorize a function with _Matrix_:
+```cpp
+Matrix sigmoid(Matrix& z) {
+    return 1.0 / (1.0 + exp(-z));
+}
+
+int main (void) {
+    Matrix N(3, 5);
+    
+    N.FillRandom(0, 1); // random values in range [0, 1]
+    
+    Matrix result = sigmoid(N);
+    
+    // do some stuff...
+    
+    return 0;
+}
+```
 
 ##Dependencies and requirements
 Absolutely _no dependencies_ except for a C/C++ runtime. Requires a C++ compiler to be built. 
