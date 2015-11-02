@@ -37,13 +37,13 @@ public:
     Matrix();
     Matrix(long rows, long cols);
     
-    void FillRandom(long min=0, long max=RAND_MAX);
+    void FillRandom(long min = 0, long max = RAND_MAX);
     void FillZero();
     void Reshape(long rows, long cols);
     Matrix T();
-    long Rows() {return this->rows;}
-    long Cols() {return this->cols;}
-    Matrix Transpose() {return this->T();}
+    long Rows() { return this->rows; }
+    long Cols() { return this->cols; }
+    Matrix Transpose() { return this->T(); }
     Matrix Identity();
     Matrix sqr();
 
@@ -63,31 +63,31 @@ public:
     Matrix operator[](const int);
     
     bool operator==(const Matrix& m) {
-        long a,b;
-        if (this->rows!=m.rows || this->cols != m.cols) return false;
-        for (a=0;a<rows;++a)
-            for (b=0;b<cols;++b)
-                if (this->M[a][b]!=m.M[a][b]) return false;
+        long a, b;
+        if (rows!=m.rows || cols != m.cols) return false;
+        for (a = 0; a < rows;++a)
+            for (b = 0; b < cols;++b)
+                if (this->M[a][b] != m.M[a][b]) return false;
         return true;
     }
     
     inline bool operator!=(const Matrix& m) {
-        return !(*this==m);
+        return !(*this == m);
     }
     
     friend std::ostream& operator<<(std::ostream& os, const Matrix& obj){
         os << "\n\tRows: " << obj.rows<<" cols: "<<obj.cols<<"\n";
         long a,b;
         os << std::fixed << std::setprecision(3);
-        for (a=0; a<obj.rows; ++a) {
-            for (b=0; b<obj.cols; ++b) os << (obj.M)[a][b] << " ";
+        for (a = 0; a < obj.rows; ++a) {
+            for (b = 0; b < obj.cols; ++b) os << (obj.M)[a][b] << " ";
             os << "\n";
         }
         os << std::endl;
         return os;
     }
 private:
-    double Random(long min=0, long max=RAND_MAX);
+    double Random(long min = 0, long max = RAND_MAX);
     double Mult_Row_by_Column(std::vector<double>row, std::vector<double> col, long size);
     long rows, cols;
         //'M' is a vector of vectors that holds all the values
@@ -97,26 +97,26 @@ private:
 
     //number + matrix
 inline Matrix operator+(double left, Matrix& right) {
-    return right+left;
+    return right + left;
 }
     //number + matrix
 inline Matrix operator+(double left, Matrix right) {
-    return right+left;
+    return right + left;
 }
 
     //number - matrix
 inline Matrix operator-(double left, Matrix& right) {
-    return (-right)+left;
+    return (-right) + left;
 }
 
     //number - matrix
 inline Matrix operator-(double left, Matrix right) {
-    return (-right)+left;
+    return (-right) + left;
 }
 
     //number * matrix
 inline Matrix operator*(double left, Matrix& right) {
-    return left*right;
+    return left * right;
 }
 
 #endif /* Matrix_hpp */

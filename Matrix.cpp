@@ -14,7 +14,7 @@
 
     //default constructor constructs an ordinary number
 Matrix::Matrix() {
-    this->rows=this->cols=1;
+    this->rows = this->cols = 1;
     this->M.resize(rows);
     this->M[0].resize(cols);
     this->_Identity.resize(rows);
@@ -23,39 +23,39 @@ Matrix::Matrix() {
 
 Matrix::Matrix(long rows, long cols) {
     long a;
-    this->rows=rows, this->cols=cols;
+    this->rows = rows, this->cols = cols;
     this->M.resize(rows);
-    for (a=0;a<rows;++a) this->M[a].resize(cols);
-    if (this->rows==this->cols) {
+    for (a = 0;a < rows; ++a) this->M[a].resize(cols);
+    if (this->rows == this->cols) {
         this->_Identity.resize(rows);
-        for (a=0;a<rows;++a) this->_Identity[a].resize(cols);
+        for (a = 0; a < rows; ++a) this->_Identity[a].resize(cols);
     }
 }
 
     //transpose a matrix
 Matrix Matrix::T() {
-    Matrix tmp(this->cols, this->rows);
-    long a,b;
-    for (a=0; a<cols; ++a)
-        for (b=0; b<rows; ++b)
+    Matrix tmp(cols, rows);
+    long a, b;
+    for (a = 0; a < cols; ++a)
+        for (b = 0; b < rows; ++b)
             tmp.M[a][b]=this->M[b][a];
     return tmp;
 }
 
     //return identity matrix
 Matrix Matrix::Identity() {
-    if (this->rows != this->cols)
+    if (rows != cols)
         throw SizeException("Matrix must be square to have an identity matrix");
 
     long a, b, c;
-    this->_Identity.resize(rows);
-    for (a=0;a<rows;++a) this->_Identity[a].resize(cols);
-    for (a=0, c=0; a< this->rows; a++, c++)
-        for (b=0; b<this->cols; b++)
-            this->_Identity[a][b]=(b==c)?1:0;
+    _Identity.resize(rows);
+    for (a = 0; a < rows; ++a) _Identity[a].resize(cols);
+    for (a = 0, c = 0; a < rows; a++, c++)
+        for (b = 0; b < cols; b++)
+            _Identity[a][b] = (b==c)?1:0;
     
     Matrix k(rows,rows);
-    k.M=this->_Identity;
+    k.M=_Identity;
     
     return k;
 }
@@ -65,9 +65,9 @@ Matrix exp(Matrix A){
     long k, i;
     Matrix E(A.Rows(), A.Cols());
     
-    for (k=0; k<A.Rows(); k++)
+    for (k = 0; k < A.Rows(); k++)
         for (i = 0; i < A.Cols(); i++)
-            E.M[k][i]=exp(A.M[k][i]);
+            E.M[k][i] = exp(A.M[k][i]);
     return E;
 }
 
@@ -77,7 +77,7 @@ Matrix Matrix::sqr() {
     if (rows!=cols)
         throw SizeException("Matrix must be square to be raised to power of 2");
     else
-        return (*this)*(*this);
+        return (*this) * (*this);
 }
 
 
@@ -91,16 +91,16 @@ double Matrix::Random(long min, long max) {
 }
 
 void Matrix::FillRandom(long min, long max){
-    long a,b;
-    for (a=0;a<rows;++a)
-        for (b=0;b<cols;++b)
-            M[a][b]=Random(min, max);
+    long a, b;
+    for (a = 0; a < rows; ++a)
+        for (b = 0; b < cols; ++b)
+            M[a][b] = Random(min, max);
 }
 
 void Matrix::FillZero(){
-    long a,b;
-    for (a=0;a<rows;++a)
-        for (b=0;b<cols;++b)
+    long a, b;
+    for (a = 0; a < rows; ++a)
+        for (b = 0; b < cols; ++b)
             M[a][b]=0;
 }
 

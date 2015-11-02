@@ -21,15 +21,15 @@ int main(int argc, const char * argv[]) {
     srand((unsigned int)time(NULL));
     
         //create some matrices of size (rows, columns)
-    Matrix a(3,4);
+    Matrix a(3, 4);
     Matrix aHat;
-    Matrix b(4,2);
-    Matrix c(3,2);
+    Matrix b(4, 2);
+    Matrix c(3, 2);
     
         //fill matrices with random values
-    a.FillRandom(0,1);
+    a.FillRandom(0, 1);
     aHat = a;
-    b.FillRandom(0,1);
+    b.FillRandom(0, 1);
     
         //outputting is easy
     cout << "A:\n" << a << endl;
