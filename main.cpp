@@ -21,10 +21,7 @@ int main(int argc, const char * argv[]) {
     srand((unsigned int)time(NULL));
     
         //create some matrices of size (rows, columns)
-    Matrix a(3, 4);
-    Matrix aHat;
-    Matrix b(4, 2);
-    Matrix c(3, 2);
+    Matrix a(3, 4), aHat, b(4, 2), c(3, 2);
     
         //fill matrices with random values
     a.FillRandom(0, 1);
