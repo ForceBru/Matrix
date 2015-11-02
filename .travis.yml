@@ -1,9 +1,28 @@
 language: cpp
+
+addons:
+  apt:
+    sources:
+      - llvm-toolchain-precise
+      - ubuntu-toolchain-r-test
+    packages:
+      - clang-3.8
+      - g++-5
+      
+install:
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-5"; fi
+  - if [ "$CXX" = "clang++" ]; then export CXX="clang++-3.8"; fi
+  
 script: $CXX -std=c++0x Matrix.cpp operators.cpp main.cpp
+
 compiler:
     - gcc 
     - clang
+    
 os:
    - linux
    - osx 
+
+
+
 
