@@ -21,7 +21,51 @@ First of all, you need to clone this repo to your computer (or just download and
 Then run `./some_file` to see how _Matrix_ works. 
 
 ##Any examples, please?
-Well, `main.cpp` is an example. You need to compile it and that's all.
+The most complete example is `main.cpp` itself. Here is a list of all methods currently available and examples of usage.
+
+ - addition and substraction
+  - matrix + matrix and matrix - matrix
+   ```
+   Matrix a(2, 3), b=a, c=a;
+   
+   a.FillRandom();
+   b.FillZero();
+   
+   c = a + b;
+   
+   if (c != a) std::cout << "Something went wrong, please raise an issue!";
+   else std::cout << "Test passed";
+   
+   c -= a;
+   
+   if (c != b) std::cout << "Something went wrong, please raise an issue!";
+   else std::cout << "Test passed";
+   ```
+  - matrix + number and matrix - number (element-wise and interchangeable)
+   ```
+   Matrix a(2, 3);
+   
+   a.FillZero();
+   
+   a += 6.2;
+   
+   if (a[0][0] != 6.2) std::cout << "Something went wrong, please raise an issue!";
+   else std::cout << "Test passed";
+   ```
+ - multiplication
+  - matrix * matrix and matrix * number
+   ```
+   Matrix a(2, 3), b(3, 4), c(2, 4);
+   
+   a.FillRandom();
+   b.FillRandom();
+   
+   c = a * b;
+   
+   cout << c * 3.1 << endl;
+   ```
+ - division
+  - number / matrix and matrix / number only (element-wise)
 
 ##Dependencies and requirements
 Absolutely _no dependencies_ except for a C/C++ runtime. Requires a C++ compiler to be built. 
