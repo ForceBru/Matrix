@@ -32,13 +32,6 @@ Matrix::Matrix(long rows, long cols) {
     }
 }
 
-Matrix::~Matrix() {
-    long a;
-    for (a=0; a<rows; a++) std::vector<double>(M[a]).swap(M[a]);
-    std::vector< std::vector<double> >(M).swap(M);
-    std::vector<double>(_t).swap(_t);
-}
-
     //transpose a matrix
 Matrix Matrix::T() {
     Matrix tmp(this->cols, this->rows);

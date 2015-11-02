@@ -36,7 +36,6 @@ class Matrix {
 public:
     Matrix();
     Matrix(long rows, long cols);
-    ~Matrix();
     
     void FillRandom(long min=0, long max=RAND_MAX);
     void FillZero();
