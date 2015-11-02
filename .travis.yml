@@ -1,5 +1,5 @@
 language: cpp
-script: $CXX -std=c++0x Matrix.cpp Exceptions.cpp main.cpp
+script: $CXX -std=c++0x Matrix.cpp Exceptions.cpp operators.cpp main.cpp
 compiler:
     - gcc 
     - clang
