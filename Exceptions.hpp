@@ -8,6 +8,9 @@
 #ifndef Exceptions_hpp
 #define Exceptions_hpp
 
+#include <exception>
+#include <string>
+
 /* This exception is thrown when something
  is wrong with the sze of a matrix.
  For example, if two matrices are not of the
@@ -16,17 +19,13 @@
  e.g. PxN + PxK instead of PxN + PxN.
 */
 
-class SizeException
-{
+class SizeException : public std::exception {
 public:
-    SizeException();
-    SizeException(const char * msg);
-    virtual const char* what() const throw()
-    {
-        return this->m;
-    }
+    SizeException() : msg("Size mismatch") { }
+    explicit SizeException(const char * msg) : msg(msg) { }
+    const char* what() const noexcept override { return msg.c_str(); }
 private:
-    const char *m;
+    std::string msg;
 };
 
 #endif /* Exceptions_hpp */

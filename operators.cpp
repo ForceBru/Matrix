@@ -133,6 +133,7 @@ Matrix& Matrix::operator=(Matrix const& m) {
     return *this;
 }
 
+    //get a row of a matrix or its element
 Matrix Matrix::operator[](const int i) {
     if (this->rows!=1) {
         if (i<0 || i==this->rows)
