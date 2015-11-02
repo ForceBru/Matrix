@@ -21,11 +21,11 @@ First of all, you need to clone this repo to your computer (or just download and
 Then run `./some_file` to see how _Matrix_ works. 
 
 ##Any examples, please?
-The most complete example is `main.cpp` itself. Here is a list of all methods currently available and examples of usage.
+The most complete example is `main.cpp` itself. Here is a list of all mathematical operations currently available and examples of usage.
 
  - addition and substraction
-  - matrix + matrix and matrix - matrix
-   ```
+  - `matrix + matrix` and `matrix - matrix`
+   ```cpp
    Matrix a(2, 3), b=a, c=a;
    
    a.FillRandom();
@@ -41,8 +41,8 @@ The most complete example is `main.cpp` itself. Here is a list of all methods cu
    if (c != b) std::cout << "Something went wrong, please raise an issue!";
    else std::cout << "Test passed";
    ```
-  - matrix + number and matrix - number (element-wise and interchangeable)
-   ```
+  - `matrix + number` and `matrix - number` (element-wise and interchangeable)
+   ```cpp
    Matrix a(2, 3);
    
    a.FillZero();
@@ -53,8 +53,8 @@ The most complete example is `main.cpp` itself. Here is a list of all methods cu
    else std::cout << "Test passed";
    ```
  - multiplication
-  - matrix * matrix and matrix * number
-   ```
+  - `matrix * matrix` and `matrix * number` (last case interchangeable)
+   ```cpp
    Matrix a(2, 3), b(3, 4), c(2, 4);
    
    a.FillRandom();
@@ -65,7 +65,19 @@ The most complete example is `main.cpp` itself. Here is a list of all methods cu
    cout << c * 3.1 << endl;
    ```
  - division
-  - number / matrix and matrix / number only (element-wise)
+  - `number / matrix` and `matrix / number` only (element-wise)
+ - raising to power of two
+  ```cpp
+  Matrix a(2, 2); // square matrices only
+  
+  cout << a.sqr() << endl;
+  ```
+ - matrix exponentiation (element-wise)
+  ```cpp
+  Matrix a(3, 5);
+  
+  cout << exp(a) << endl;
+  ```
 
 ##Dependencies and requirements
 Absolutely _no dependencies_ except for a C/C++ runtime. Requires a C++ compiler to be built. 
