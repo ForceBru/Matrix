@@ -10,8 +10,11 @@
 
 #include "Matrix.hpp"
 
-
 using namespace std;
+
+Matrix sigmoid(Matrix& z){
+    return 1.0 / (1.0 + exp(-z));
+}
 
 int main(int argc, const char * argv[]) {
     
@@ -25,7 +28,7 @@ int main(int argc, const char * argv[]) {
     
         //fill matrices with random values
     a.FillRandom(0,1);
-    aHat=a;
+    aHat = a;
     b.FillRandom(0,1);
     
         //outputting is easy
@@ -34,8 +37,8 @@ int main(int argc, const char * argv[]) {
     
     try {
             //multiply two matrices (of appropriate size!)
-        cout << "Multiplying matrices..." << endl;
-        c=a*b;
+        cout << "Multiplying matrices (A*B)..." << endl;
+        c = a * b;
         cout << c << endl;
         
     } catch (const SizeException& e){
@@ -44,11 +47,11 @@ int main(int argc, const char * argv[]) {
     }
     
     try {
-            //add to matrices easily
-        cout << "Adding matrices..." << endl;
-        aHat+=a;
+            //add two matrices easily
+        cout << " Adding matrices..." << endl;
+        aHat += a;
             //and then substract
-        aHat-=a;
+        aHat -= a;
         
             //now aHat should be equal to a
         if (aHat != a) cout << "That's an error!" << endl;
@@ -60,45 +63,66 @@ int main(int argc, const char * argv[]) {
         //'c' was 3x2, now make it 2x2 by removing the last row (other rows are kept)
     c.Reshape(2, 3);
     
-    cout << c << endl;
     
-        //transpose a matrix
-    cout << a.T() << endl; //or a.Transpose()
+    try {
+            //transpose a matrix
+        cout << " Transposing matrix A:" << endl;
+        cout << a.T() << endl; //or a.Transpose()
+    } catch (const SizeException& e) {
+        cout << "Caught exception: " << e.what() << endl;
+    }
     
+        //change shape of matrix (3 rows, 3 columns)
     a.Reshape(3, 3);
     
     try {
-        cout << "Identity matrix of a is" << endl;
+        cout << " Identity matrix of A after reshaping to (3, 3) is" << endl;
         cout << a.Identity() << endl;
+    } catch (const SizeException& e) {
+        cout << "Caught exception: " << e.what() << endl;
+    }
+    
+    try {
+            //square a matrix
+        cout << " Raising matrix A to power of 2:" << endl;
+        cout << a.sqr() << endl;
     } catch (const SizeException& e) {
         cout << "Caught exception: " << e.what() << endl;
     }
 
     try {
         a.FillRandom(0,1);
-        cout << " Matrix a:"<< endl;
+        cout << " Matrix A:"<< endl;
         cout << a << endl;
-        cout << " Matrix -a:"<< endl;
+        cout << " Matrix -A:"<< endl;
         cout << -a << endl;
-        cout << "exp(a) is" << endl;
+        cout << " exp(A) is" << endl;
         cout << exp(a) << endl;
-        cout << " Matrix 1/a:"<< endl;
-        cout << 1/a << endl;
+    } catch (const SizeException& e) {
+        cout << "Caught exception: " << e.what() << endl;
+    }
+
+    
+    try {
+        cout << " First row of matrix A:" << endl;
+        cout << a[0] << endl;
     } catch (const SizeException& e) {
         cout << "Caught exception: " << e.what() << endl;
     }
     
     try {
-        cout << "Dividing b by a:" << endl;
-        b.Reshape(a.Rows(), a.Cols());
-        b.FillRandom(0,1);
-        cout << b/a << endl;
+        cout << " First element of the first row of matrix A:" << endl;
+        cout << a[0][0] << endl;
     } catch (const SizeException& e) {
         cout << "Caught exception: " << e.what() << endl;
     }
     
-    
-    cout << 1/(1+exp(-a)) << endl;
+    try {
+        cout << " Applying sigmoid function to A:" << endl;
+        cout << sigmoid(a) << endl;
+    } catch (const SizeException& e) {
+        cout << "Caught exception: " << e.what() << endl;
+    }
     
     return 0;
 }

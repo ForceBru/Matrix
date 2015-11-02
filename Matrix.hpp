@@ -19,6 +19,18 @@
 
 #include "Exceptions.hpp"
 
+/* This class represents a matrix object and implements all
+ mathematical operations that can be done to a matrix:
+    addition and substraction
+    multiplication
+    division (only number / matrix and element-wise)
+    raising to power of 2
+    exponentiation (element-wise)
+ It's easy to transpose a matrix or to get an identity matrix 
+ using appropriate methods.
+ A matrix can currently be filled either with random numbers
+ either with zeroes.
+*/
 
 class Matrix {
 public:
@@ -34,22 +46,23 @@ public:
     long Cols() {return this->cols;}
     Matrix Transpose() {return this->T();}
     Matrix Identity();
+    Matrix sqr();
 
     friend Matrix exp(Matrix);
-    friend Matrix operator/(int left, Matrix right);
-    friend Matrix operator/(Matrix& left, Matrix& right);
+    friend Matrix operator/(const double, const Matrix& );
     
-    Matrix& operator=(const Matrix& m);
+    Matrix& operator=(const Matrix&);
     Matrix operator+(const Matrix& right) const;
-    Matrix operator+(const int& right) const;
+    Matrix operator+(const double& right) const;
     Matrix operator+=(const Matrix& right);
     Matrix operator-() const;
     Matrix operator-(const Matrix& right) const;
     Matrix operator-=(const Matrix& right);
     Matrix operator*(const Matrix& right);
-    Matrix operator*(const int& right) const;
-    Matrix operator/(const int& right) const;
-    Matrix operator/(const Matrix& right) const;
+    Matrix operator*(const double& right) const;
+    
+    Matrix operator[](const int);
+    
     bool operator==(const Matrix& m) {
         long a,b;
         if (this->rows!=m.rows || this->cols != m.cols) return false;
@@ -83,43 +96,28 @@ private:
     std::vector<double> _t;
 };
 
-inline Matrix operator+(int left, Matrix& right) {
+    //number + matrix
+inline Matrix operator+(double left, Matrix& right) {
+    return right+left;
+}
+    //number + matrix
+inline Matrix operator+(double left, Matrix right) {
     return right+left;
 }
 
-inline Matrix operator+(int left, Matrix right) {
-    return right+left;
+    //number - matrix
+inline Matrix operator-(double left, Matrix& right) {
+    return (-right)+left;
 }
 
-inline Matrix operator*(int left, Matrix& right) {
+    //number - matrix
+inline Matrix operator-(double left, Matrix right) {
+    return (-right)+left;
+}
+
+    //number * matrix
+inline Matrix operator*(double left, Matrix& right) {
     return left*right;
 }
-
-inline Matrix operator/(int left, Matrix right) {
-    if (right.rows != right.cols)
-        throw SizeException("Size mismatch while substracting matrices!");
-    
-    Matrix ret=right;
-    long a, b;
-    for (a=0; a<right.rows; ++a)
-        for (b=0; b<right.cols; ++b)
-            ret.M[a][b]=(double)left/right.M[a][b];
-    return ret;
-}
-
-inline Matrix operator/(Matrix& left, Matrix& right) {
-    if (left.cols!=right.cols || left.rows!=right.rows)
-        throw SizeException("Size mismatch while dividing matrices");
-    
-    long a,b;
-    Matrix res=left;
-    for (a=0; a<left.rows; ++a)
-        for (b=0; b<left.cols; ++b) {
-            res.M[a][b]=left.M[a][b]/right.M[a][b];
-        }
-    return res;
-}
-
-Matrix exp(Matrix);
 
 #endif /* Matrix_hpp */
