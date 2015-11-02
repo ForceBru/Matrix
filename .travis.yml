@@ -10,8 +10,8 @@ addons:
       - g++-5
       
 install:
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-5"; fi
-  - if [ "$CXX" = "clang++" ]; then export CXX="clang++-3.8"; fi
+  - if [ "$CXX" = "g++" && "$TRAVIS_OS_NAME" = "linux" ]; then export CXX="g++-5"; fi
+  - if [ "$CXX" = "clang++" && "$TRAVIS_OS_NAME" = "linux" ]; then export CXX="clang++-3.8"; fi
   
 script: $CXX -std=c++0x Matrix.cpp operators.cpp main.cpp
 
