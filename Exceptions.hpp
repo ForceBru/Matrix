@@ -23,7 +23,7 @@ class SizeException : public std::exception {
 public:
     SizeException() : msg("Size mismatch") { }
     explicit SizeException(const char * msg) : msg(msg) { }
-    const char* what() const noexcept override { return msg.c_str(); }
+    virtual const char* what() const throw() { return msg.c_str(); }
 private:
     std::string msg;
 };
