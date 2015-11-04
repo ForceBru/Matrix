@@ -31,8 +31,8 @@ The most complete example is `main.cpp` itself. Here is a list of all mathematic
    ```cpp
    Matrix a(2, 3), b=a, c=a;
    
-   a.FillRandom();
-   b.FillZero();
+   a.Random(0, 1); // random values in range [0, 1]
+   b.Zeroes();
    
    c = a + b;
    
@@ -48,7 +48,7 @@ The most complete example is `main.cpp` itself. Here is a list of all mathematic
    ```cpp
    Matrix a(2, 3);
    
-   a.FillZero();
+   a.Zeroes();
    
    a += 6.2;
    
@@ -60,8 +60,8 @@ The most complete example is `main.cpp` itself. Here is a list of all mathematic
    ```cpp
    Matrix a(2, 3), b(3, 4), c(2, 4);
    
-   a.FillRandom();
-   b.FillRandom();
+   a.Random();
+   b.Random();
    
    c = a * b;
    
@@ -85,7 +85,7 @@ The most complete example is `main.cpp` itself. Here is a list of all mathematic
   ```cpp
   Matrix a(2, 4);
   
-  a.FillRandom();
+  a.Random();
   
     //too easy
   cout << -a << endl;
@@ -101,7 +101,7 @@ Matrix sigmoid(Matrix& z) {
 int main (void) {
     Matrix N(3, 5);
     
-    N.FillRandom(0, 1); // random values in range [0, 1]
+    N.Random(0, 1);
     
     Matrix result = sigmoid(N);
     
@@ -110,6 +110,35 @@ int main (void) {
     return 0;
 }
 ```
+
+##Ways to populate matrices with data
+ - with random values, ones or zeroes
+  ```cpp
+  Matrix a(2, 3), b(3, 4), c(4, 5);
+  
+  a.Random(0, 1);
+  b.Ones();
+  c.Zeroes();
+  ```
+ - with values from a file
+  ```cpp
+  Matrix a; // shape will be calculated automatically
+            // according to data in the file
+  a.FromFile("matrix_a.txt");
+  ```
+  
+ ###Matrix file format
+ Input data row by row and column by column. Separate numbers with a whitespace, rows with new lines.
+ 
+ Example:
+ 
+ ```
+ 0.234 0.456 0.678
+ 0.123 0.345 0.567
+ ```
+ 
+ This will be converted into a 2X3 matrix.
+ 
 
 ##Dependencies and requirements
 Absolutely _no dependencies_ except for a C/C++ runtime. Requires a C++ compiler to be built. 
