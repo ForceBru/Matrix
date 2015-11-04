@@ -9,11 +9,13 @@
 
 #include "Matrix.hpp"
 
+
     // multiply a row of one matrix by a column of another matrix
-double Matrix::Mult_Row_by_Column(std::vector<double> row, std::vector<double> col, long size) {
+double Matrix::Mult_Row_by_Column(Matrix row, Matrix col) {
     double res; long a;
-    for (a = 0, res = 0; a < size; ++a)
-        res += row[a] * col[a];
+    for (a = 0, res = 0; a < row.Cols(); ++a) {
+        res += static_cast<double>(row[a]) * static_cast<double>(col[a]);
+    }
     return res;
 }
 
@@ -49,6 +51,7 @@ Matrix Matrix::operator+=(const Matrix& right) {
     for (a = 0; a < rows; ++a)
         for (b = 0; b < cols; ++b)
             this->M[a][b] += right.M[a][b];
+    modified=true;
     return *this;
 }
 
@@ -78,6 +81,7 @@ Matrix Matrix::operator-=(const Matrix& right) {
     for (a = 0; a < rows; ++a)
         for (b = 0; b < cols; ++b)
             this->M[a][b] -= right.M[a][b];
+    modified=true;
     return *this;
 }
 
@@ -94,18 +98,32 @@ Matrix operator/(const double a, const Matrix& b) {
 }
 
 
+    //calculate Hadamard product: this (*) right -> element-wise multiplication
+Matrix Matrix::Hadamard(const Matrix& right) const {
+    if (cols != right.cols || rows != right.rows)
+        throw SizeException("Size mismatch while caclulating Hadamard product");
+
+    Matrix res(rows, cols);
+    long a, b;
+    for (a = 0; a < rows; ++a)
+        for (b = 0; b < cols; ++b)
+            res.M[a][b] = (this->M[a][b]) * right.M[a][b];
+
+    return res;
+}
+
+
     // multiply a matrix by another matrix
 Matrix Matrix::operator*(const Matrix& right) {
     if (cols != right.rows)
         throw SizeException("Size mismatch while multiplying matrices");
     
     long a, b, c, d;
-    Matrix res(rows, right.cols);
-    if (_t.size() != cols) _t.resize(cols);
+    Matrix res(rows, right.cols), k(cols, 1);;
     for (a=0; a<rows; ++a)
         for (b = 0, d = 0; b < cols && d < right.cols; ++b, ++d) {
-            for (c = 0; c < cols; ++c) _t[c] = right.M[c][d];
-            res.M[a][b] = Mult_Row_by_Column(this->M[a], _t, cols);
+            for (c = 0; c < cols; ++c) k.M[c][0]=right.M[c][d];
+            res.M[a][b] = Mult_Row_by_Column((*this)[a], k);
         }
     return res;
 }
@@ -131,28 +149,28 @@ Matrix& Matrix::operator=(Matrix const& m) {
         this->M = m.M;
         this->Reshape(this->rows, this->cols);
     }
+    modified=true;
     return *this;
 }
 
     //get a row of a matrix or its element
-Matrix Matrix::operator[](const int i) {
+Matrix& Matrix::operator[](const long i) {
+    static Matrix ret;
     if (rows != 1) {
         if (i < 0 || i == rows)
             throw SizeException("Index out of range");
         
-        Matrix ret(1, cols);
+        ret.Reshape(1, cols);
         long a;
         
         for (a = 0; a < cols; ++a) ret.M[0][a] = this->M[i][a];
-        
-        return ret;
     } else {
         if (i < 0 || i == cols)
             throw SizeException("Index out of range");
         
-        Matrix ret(1,1);
+        ret.Reshape(1, 1);
         ret.M[0][0] = this->M[0][i];
-        
-        return ret;
     }
+    
+    return ret;
 }

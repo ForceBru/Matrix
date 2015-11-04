@@ -16,8 +16,11 @@
 #include <iomanip>
 #include <vector>
 #include <random>
+#include <fstream>
+#include <limits>
 
 #include "Exceptions.hpp"
+
 
 /* This class represents a matrix object and implements all
  mathematical operations that can be done to a matrix:
@@ -32,19 +35,23 @@
  either with zeroes.
 */
 
+
 class Matrix {
 public:
     Matrix();
     Matrix(long rows, long cols);
     
-    void FillRandom(long min = 0, long max = RAND_MAX);
-    void FillZero();
+    void Random(long min = 0, long max = RAND_MAX);
+    void Zeroes();
+    void Ones();
+    bool FromFile(std::string fname);
     void Reshape(long rows, long cols);
     Matrix T();
     long Rows() { return this->rows; }
     long Cols() { return this->cols; }
     Matrix Transpose() { return this->T(); }
     Matrix Identity();
+    Matrix Hadamard(const Matrix& right) const;
     Matrix sqr();
 
     friend Matrix exp(Matrix);
@@ -60,14 +67,37 @@ public:
     Matrix operator*(const Matrix& right);
     Matrix operator*(const double& right) const;
     
-    Matrix operator[](const int);
+    Matrix& operator[](const long);
     
-    bool operator==(const Matrix& m) {
+    explicit operator double() const {
+        if (rows == 1 && cols == 1) return M[0][0];
+        return 0;
+    }
+    
+    explicit operator int() const {
+        return (int)((double)(*this));
+    }
+    
+    explicit operator long() const {
+        return (long)((double)(*this));
+    }
+    
+//    bool operator==(const Matrix& m) {
+//        long a, b;
+//        if (rows!=m.rows || cols != m.cols) return false;
+//        for (a=0; a < rows; ++a)
+//            for (b=0; b < cols; ++b)
+//                if (this->M[a][b] != m.M[a][b]) return false;
+//        return true;
+//    }
+    
+    bool operator==(const Matrix& mat) {
         long a, b;
-        if (rows!=m.rows || cols != m.cols) return false;
-        for (a = 0; a < rows;++a)
-            for (b = 0; b < cols;++b)
-                if (this->M[a][b] != m.M[a][b]) return false;
+        if (rows!=mat.rows || cols != mat.cols) return false;
+        
+        for (a=0; a < rows; ++a)
+            for (b=0; b < cols; ++b)
+                if (fabs(M[a][b] - mat.M[a][b]) < std::numeric_limits<double>::epsilon()) return false;
         return true;
     }
     
@@ -75,24 +105,26 @@ public:
         return !(*this == m);
     }
     
+    
     friend std::ostream& operator<<(std::ostream& os, const Matrix& obj){
-        os << "\n\tRows: " << obj.rows<<" cols: "<<obj.cols<<"\n";
         long a,b;
-        os << std::fixed << std::setprecision(3);
+            //os << std::fixed << std::setprecision(3);
         for (a = 0; a < obj.rows; ++a) {
-            for (b = 0; b < obj.cols; ++b) os << (obj.M)[a][b] << " ";
-            os << "\n";
+            for (b = 0; b < obj.cols; ++b) {
+                os << (obj.M)[a][b];
+                if (b != obj.cols-1) os << ' ';
+            }
+            /*if (a != obj.rows-1)*/ os << std::endl;
         }
-        os << std::endl;
         return os;
     }
 private:
-    double Random(long min = 0, long max = RAND_MAX);
-    double Mult_Row_by_Column(std::vector<double>row, std::vector<double> col, long size);
+    double _Random(long min = 0, long max = RAND_MAX);
+    double Mult_Row_by_Column(Matrix row, Matrix col);
     long rows, cols;
+    bool modified;
         //'M' is a vector of vectors that holds all the values
     std::vector< std::vector<double> > M, _Transposed, _Identity;
-    std::vector<double> _t;
 };
 
     //number + matrix
