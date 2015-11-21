@@ -16,10 +16,12 @@ Now Matrix should be used as a static library. First you should compile it.
 1. Clone this repo or download the zipfile
     1. Unzip the downloaded file if any
 2. Open console and change directory to where you've got a copy of _Matrix_
-3. Change directory to `Matrix`
-    `cd Matrix`
+3. Change directory to `Matrix-master`
+    ```sh
+    cd Matrix-master
+    ```
 4. Generate object files and create a library
-    `$CXX` is your C++ compiler. You can do `export CXX=clang #or gcc` and then copy and paste these commands.
+    `$CXX` is your C++ compiler. You can do `export CXX=clang` or `export CXX=g++` and then copy and paste these commands.
     ###Linux
     ```sh
     libtool --tag=CXX --mode=compile $CXX -std=c++0x -g -O -c Matrix.cpp
@@ -27,7 +29,7 @@ Now Matrix should be used as a static library. First you should compile it.
     libtool --tag=CXX --mode=link $CXX -std=c++0x -g -O -o libMatrix.a Matrix.lo operators.lo
     ```
     
-    ###Mac OS
+    ###Mac OS X
     ```sh
     $CXX -c Matrix.cpp -o Matrix.o
     $CXX -c operators.cpp -o operators.o
@@ -46,10 +48,10 @@ Now Matrix should be used as a static library. First you should compile it.
     cd ..
     $CXX -I Matrix your_files -lMatrix
     ```
-7. If you still have questions about how to compile _Matrix_ or link with the library, have a look at `.travis.yml` file.
+7. If you still have questions about how to compile _Matrix_ or link with the library, please have a look at the `.travis.yml` file.
 
 ##Any examples, please?
-The most complete example is `main.cpp` itself. Here is a list of all mathematical operations currently available and examples of usage.
+The most complete example is `Matrix_test/Tests.cpp`. Here is a list of all mathematical operations currently available and examples of usage.
 
  - addition and substraction
   - `matrix + matrix` and `matrix - matrix`
@@ -130,7 +132,7 @@ int main (void) {
     
     Matrix result = sigmoid(N);
     
-    // do some stuff...
+    cout << result << endl;
     
     return 0;
 }
@@ -163,6 +165,19 @@ int main (void) {
  ```
  
  This will be converted into a 2X3 matrix.
+ 
+ ###Outputting matrices
+ If you want a matrix be shown to the user, he probably might not want to see numbers with a lot of precision. You may find it useful to use a function called `Prettify` to... make your matrices look nice to the users.
+ 
+ ```cpp
+ Matrix a(2, 3);
+ 
+ a.Random(0, 2);
+ 
+ cout << a.Prettify() << endl;
+ ```
+ 
+ But if you need to save a matrix to a file doing this will lose (a lot of) precision. You'd better output it without using `Prettify` then.
  
 
 ##Dependencies and requirements
