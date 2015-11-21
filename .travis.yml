@@ -15,9 +15,21 @@ install:
   
 script: 
   - cd Matrix
-  - $CXX -std=c++0x Matrix.cpp -o Matrix.o
-  - $CXX -std=c++0x operators.cpp -o operators.o
-  - libtool -static Matrix.o operators.o -o libMatrix.a
+  - if [[ "$TRAVIS_OS_NAME" = "linux" ]]; then 
+      libtool --mode=compile $CXX -std=c++0x -g -O -c Matrix.cpp; 
+    else  
+      $CXX -c Matrix.cpp -o Matrix.o;
+    fi
+  - if [[ "$TRAVIS_OS_NAME" = "linux" ]]; then 
+      libtool --mode=compile $CXX -std=c++0x -g -O -c operators.cpp; 
+    else
+      $CXX -c operators.cpp -o operators.o;
+    fi
+  - if [[ "$TRAVIS_OS_NAME" = "linux" ]]; then 
+      libtool --mode=link $CXX -g -O -o libMatrix.a Matrix.lo operators.lo; 
+    else
+      libtool -static operators.o Matrix.o -o libMatrix.a
+    fi
   - cd ../Matrix_test
   - $CXX -std=c++0x -L ../Matrix -I ../Matrix main.cpp Tests.hpp -o Test -lMatrix
 
