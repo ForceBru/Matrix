@@ -18,6 +18,7 @@ Now Matrix should be used as a static library. First you should compile it.
 2. Open console and change directory to where you've got a copy of _Matrix_
 3. Change directory to `Matrix-master`: `cd Matrix-master`
 4. Generate object files and create a library
+
     `$CXX` is your C++ compiler. You can do `export CXX=clang` or `export CXX=g++` and then copy and paste these commands.
     ###Linux
     ```sh
@@ -39,6 +40,7 @@ Now Matrix should be used as a static library. First you should compile it.
     ```
 
 6. Use _Matrix_ in your project
+
     All you need is `libMatrix.a` file and a header called `Matrix.hpp`.
     ```sh
     # if you're still in Matrix/Matrix_tests
