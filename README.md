@@ -11,17 +11,42 @@ User-friendly way to perform operations with matrices.
 _Matrix_ is written to help programmers work with matrices easily and with as little efforts as possible. It also aims for code readability and simple logic. There's no need to work with vectors or arrays in your code (while that's what is used under the hood). You work with objects that implement some basic operations (like multiplication, addition, etc).
 
 ##How to use
-It's planned to distribute _Matrix_ as a library, but as for now, it's distributed simply as some source files. To use _Matrix_ you need to `#include "Matrix.hpp"` and then compile your project _with the files that belong to Matrix_: 
-```sh
-g++ your_file.cpp Matrix.cpp operators.cpp Exceptions.cpp -o some_file
-```
+Now Matrix should be used as a static library. First you should compile it. 
 
-###Compilation
-First of all, you need to clone this repo to your computer (or just download and unpack the `.zip` file). Then enter the directory with source you've downloaded and run:
+1. Clone this repo or download the zipfile
+    1. Unzip the downloaded file if any
+2. Open console and change directory to where you've got a copy of _Matrix_
+3. Change directory to `Matrix`
+    `cd Matrix`
+4. Generate object files and create a library
+    `$CXX` is your C++ compiler. You can do `export CXX=clang #or gcc` and then copy and paste these commands.
+    ###Linux
+    ```sh
+    libtool --tag=CXX --mode=compile $CXX -std=c++0x -g -O -c Matrix.cpp
+    libtool --tag=CXX --mode=compile $CXX -std=c++0x -g -O -c operators.cpp
+    libtool --tag=CXX --mode=link $CXX -std=c++0x -g -O -o libMatrix.a Matrix.lo operators.lo
+    ```
+    
+    ###Mac OS
+    ```sh
+    $CXX -c Matrix.cpp -o Matrix.o
+    $CXX -c operators.cpp -o operators.o
+    libtool -static operators.o Matrix.o -o libMatrix.a
+    ```
+5. Run tests (optional)
+    ```sh
+    cd ../Matrix_test
+    $CXX -std=c++0x -L ../Matrix -I ../Matrix main.cpp Tests.cpp -o Test -lMatrix
+    ```
 
-    g++ *.cpp -o some_file
-
-Then run `./some_file` to see how _Matrix_ works. 
+6. Use _Matrix_ in your project
+    All you need is `libMatrix.a` file and a header called `Matrix.hpp`.
+    ```sh
+    # if you're still in Matrix/Matrix_tests
+    cd ..
+    $CXX -I Matrix your_files -lMatrix
+    ```
+7. If you still have questions about how to compile _Matrix_ or link with the library, have a look at `.travis.yml` file.
 
 ##Any examples, please?
 The most complete example is `main.cpp` itself. Here is a list of all mathematical operations currently available and examples of usage.
