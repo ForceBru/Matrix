@@ -1,0 +1,10 @@
+
+*.pbxproj
+
+*.xcworkspacedata
+
+*.xcuserstate
+
+*.xcscheme
+
+*.plist
