@@ -179,6 +179,7 @@ public:
     SizeException() : msg("Size mismatch") { }
     explicit SizeException(const char * msg) : msg(msg) { }
     explicit SizeException(const std::string msg) : msg(msg.c_str()) { }
+    virtual ~SizeException() throw() {}
     virtual const char* what() const throw() { return msg.c_str(); }
 private:
     std::string msg;
