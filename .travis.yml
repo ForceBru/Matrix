@@ -13,7 +13,13 @@ install:
   - if [[ "$CXX" = "g++" && "$TRAVIS_OS_NAME" = "linux" ]]; then export CXX="g++-5"; fi
   - if [[ "$CXX" = "clang++" && "$TRAVIS_OS_NAME" = "linux" ]]; then export CXX="clang++-3.8"; fi
   
-script: $CXX -std=c++0x Matrix.cpp operators.cpp main.cpp
+script: 
+  - cd Matrix
+  - $CXX -std=c++0x Matrix.cpp -o Matrix.o
+  - $CXX -std=c++0x operators.cpp -o operators.o
+  - libtool -static Matrix.o operators.o -o libMatrix.a
+  - cd ../Matrix_test
+  - $CXX -std=c++0x -L ../Matrix -I ../Matrix main.cpp Tests.hpp -o Test -lMatrix
 
 compiler:
     - gcc 
