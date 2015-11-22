@@ -2,8 +2,8 @@
 //  Tests.h
 //  ANN
 //
-//  Created by Mia on 03.11.15.
-//  Copyright © 2015 Mia. All rights reserved.
+//  Created by ForceBru on 03.11.15.
+//  Copyright © 2015 ForceBru. All rights reserved.
 //
 
 #ifndef Tests_h

@@ -20,7 +20,7 @@ Matrix::Matrix() {
     this->modified=true, this->prettified=false;
 }
 
-
+    //construct a matrix of size rows x cols
 Matrix::Matrix(long rows, long cols) {
     long a;
     this->rows = rows, this->cols = cols;
@@ -101,6 +101,7 @@ double Matrix::_Random(long min, long max) {
     return dis(gen);
 }
 
+    //fill a matrix with random numbers
 void Matrix::Random(long min, long max) {
     long a, b;
     for (a = 0; a < rows; ++a)
@@ -125,6 +126,7 @@ void Matrix::Ones() {
     modified=true;
 }
 
+    //fill a matrix with data from a file
 int Matrix::FromFile(std::string fname) {
     std::ifstream f(fname);
     modified=prettified=false;
@@ -155,6 +157,7 @@ int Matrix::FromFile(std::string fname) {
     modified=true;
     return 1;
 }
+
 
 void Matrix::Reshape(long rows, long cols) {
     if (this->rows==rows && this->cols==cols) return; //no need to do anything here

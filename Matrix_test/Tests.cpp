@@ -2,7 +2,7 @@
 //  Tests.cpp
 //  Matrix
 //
-//  Created by Mia on 21.11.15.
+//  Created by ForceBru on 21.11.15.
 //  Copyright © 2015 ForceBru. All rights reserved.
 //
 
