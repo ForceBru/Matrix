@@ -10,6 +10,7 @@
 #include "Matrix.hpp"
 
 
+
     // multiply a row of one matrix by a column of another matrix
 double Matrix::Mult_Row_by_Column(Matrix row, Matrix col) {
     double res; long a;
@@ -138,8 +139,8 @@ Matrix Matrix::Hadamard(const Matrix& right) const {
     // multiply a matrix by another matrix
 Matrix Matrix::operator*(const Matrix& right) {
     if (cols != right.rows) {
-        std::string msg=std::string("Size mismatch while multiplying matrices: ").append(std::to_string(rows).append(std::string("X")).append(std::to_string(cols)));
-        msg.append(std::string(" vs ").append(std::to_string(right.rows)).append(std::string("X")).append(std::to_string(right.cols)));
+        std::string msg=std::string("Size mismatch while multiplying matrices: ").append(to_string(rows).append(std::string("X")).append(to_string(cols)));
+        msg.append(std::string(" vs ").append(to_string(right.rows)).append(std::string("X")).append(to_string(right.cols)));
         throw SizeException(msg);
     }
     

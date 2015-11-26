@@ -205,10 +205,9 @@ void Test(void) {
     cout << "Succeeded: " << Tests::tests.success << " out of " << Tests::tests.N;
     if (Tests::tests.success == Tests::tests.N) cout << "\t(Great!)" << endl;
     else cout << endl;
-    cout << "Failed: " << Tests::tests.failed << " out of " << Tests::tests.N;
+    cout << "Failed: " << Tests::tests.failed << " out of " << Tests::tests.N << endl;
     if (Tests::tests.failed)
         cout << "Please see which tests exactly have failed and contact the developer" << endl;
-    else cout << endl;
     cout << "\nTests finished\n\n";
 }
 }

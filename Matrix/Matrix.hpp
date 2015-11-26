@@ -15,11 +15,29 @@
 #include <algorithm>
 #include <iomanip>
 #include <vector>
+#include <sstream>
+#if __cplusplus > 199711L
 #include <random>
+#else
+#include <stdlib.h>
+#endif
 #include <fstream>
 #include <limits>
 #include <exception>
 #include <string>
+
+
+template<typename T>
+std::string to_string(const T& value)
+{
+    std::ostringstream oss;
+    oss << value;
+    return oss.str();
+}
+
+#if __cplusplus < 199711L
+#define to_string std::to_string
+#endif
 
 
 /* This class represents a matrix object and implements all
@@ -98,9 +116,9 @@ public:
                 if (
                     (ex1 != ex2)   || // first of all, the exponents should be equal
                     (sig1 != sig2) || // cheap check whether significands are equal
-                    // some equal numbers could still be considered as inequal
+                    // some equal numbers could still be considered as non-equal
                     // so this code is here to be completely sure
-                    (std::abs(sig1 - sig2) > std::numeric_limits<double>::epsilon())
+                    (std::abs(sig1 - sig2) > std::numeric_limits<double>::epsilon()*1.6)
                     ) return false;
             }
         return true;
@@ -117,7 +135,7 @@ public:
         if (obj.prettified)
             os << std::fixed << std::setprecision(3);
         else
-            os << std::fixed << std::setprecision(std::numeric_limits<double>::max_digits10);
+            os << std::fixed << std::setprecision(std::numeric_limits<double>::digits10);
         
         for (a = 0; a < obj.rows; ++a) {
             for (b = 0; b < obj.cols; ++b) {

@@ -94,11 +94,15 @@ Matrix& Matrix::Prettify() {
 
     // generate a random number
 double Matrix::_Random(long min, long max) {
+#if __cplusplus > 199711L
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> dis(min, max);
     
     return dis(gen);
+#else
+    return static_cast<double>(min) + static_cast<double>(rand()) / static_cast<double>(RAND_MAX/(max - min + 1));
+#endif
 }
 
     //fill a matrix with random numbers
@@ -128,7 +132,8 @@ void Matrix::Ones() {
 
     //fill a matrix with data from a file
 int Matrix::FromFile(std::string fname) {
-    std::ifstream f(fname);
+    std::ifstream f;
+    f.open(fname.c_str());
     modified=prettified=false;
     if (!f.is_open())
         return -1;
