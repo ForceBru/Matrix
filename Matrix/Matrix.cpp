@@ -101,7 +101,7 @@ double Matrix::_Random(long min, long max) {
     
     return dis(gen);
 #else
-    return static_cast<double>(min) + static_cast<double>(rand()) / static_cast<double>(RAND_MAX/(max - min + 1));
+    return static_cast<double>(min) + static_cast<double>(rand()) / static_cast<double>(RAND_MAX/(max - min));
 #endif
 }
 

@@ -147,7 +147,7 @@ Matrix Matrix::operator*(const Matrix& right) {
     long a, b, c, d;
     Matrix res(rows, right.cols), k(cols, 1);;
     for (a=0; a<rows; ++a)
-        for (b = 0, d = 0; b < cols && d < right.cols; ++b, ++d) {
+        for (b = 0, d = 0; b < right.cols && d < right.cols; ++b, ++d) {
             for (c = 0; c < cols; ++c) k.M[c][0]=right.M[c][d];
             res.M[a][b] = Mult_Row_by_Column((*this)[a], k);
         }
