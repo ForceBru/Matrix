@@ -136,7 +136,7 @@ int Matrix::FromFile(std::string fname) {
     f.open(fname.c_str());
     modified=prettified=false;
     if (!f.is_open())
-        return -1;
+        throw FileException();
     std::string line;
     cols=rows=0;
     M.clear();

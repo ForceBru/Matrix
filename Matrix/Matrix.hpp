@@ -203,4 +203,15 @@ private:
     std::string msg;
 };
 
+class FileException : public std::exception {
+public:
+    FileException() : msg("Failed to open a file") { }
+    explicit FileException(const char * msg) : msg(msg) { }
+    explicit FileException(const std::string msg) : msg(msg.c_str()) { }
+    virtual ~FileException() throw() {}
+    virtual const char* what() const throw() { return msg.c_str(); }
+private:
+    std::string msg;
+};
+
 #endif /* Matrix_hpp */
