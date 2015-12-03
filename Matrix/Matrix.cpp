@@ -29,6 +29,21 @@ Matrix::Matrix(long rows, long cols) {
     this->modified=true, this->prettified=false;
 }
 
+Matrix::Matrix(std::vector<double> data) {
+    this->cols=data.size();
+    this->rows=1;
+    this->M.resize(1);
+    this->M[0].assign(data.begin(), data.end());
+    this->modified=true, this->prettified=false;
+}
+
+Matrix::Matrix(std::vector< std::vector<double> > data) {
+    this->rows=data.size();
+    this->cols=data[0].size();
+    this->M.assign(data.begin(), data.end());
+    this->modified=true, this->prettified=false;
+}
+
     //transpose a matrix
 Matrix Matrix::T() {
     Matrix tmp(cols, rows);

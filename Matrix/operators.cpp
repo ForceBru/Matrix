@@ -13,10 +13,10 @@
 
     // multiply a row of one matrix by a column of another matrix
 double Matrix::Mult_Row_by_Column(Matrix row, Matrix col) {
-    double res; long a;
-    for (a = 0, res = 0; a < row.Cols(); ++a) {
+    double res; size_t a;
+    for (a = 0, res = 0; a < row.Cols(); ++a)
         res += static_cast<double>(row[a]) * static_cast<double>(col[a]);
-    }
+    
     return res;
 }
 
@@ -24,7 +24,7 @@ double Matrix::Mult_Row_by_Column(Matrix row, Matrix col) {
 Matrix Matrix::operator+(const double& right) const {
     Matrix ret = *this;
     
-    long a, b;
+    size_t a, b;
     for (a = 0; a < rows; ++a)
         for (b = 0; b < cols; ++b)
             ret.M[a][b] += right;
@@ -37,7 +37,7 @@ Matrix Matrix::operator+(const Matrix& right) const{
         throw SizeException("Size mismatch while adding matrices!");
     
     Matrix ret = *this;
-    long a, b;
+    size_t a, b;
     for (a = 0; a < rows; ++a)
         for (b = 0; b < cols; ++b)
             ret.M[a][b] += right.M[a][b];
@@ -48,7 +48,7 @@ Matrix Matrix::operator+=(const Matrix& right) {
     if (rows != right.rows || cols != right.cols)
         throw SizeException("Size mismatch while adding matrices!");
     
-    long a, b;
+    size_t a, b;
     for (a = 0; a < rows; ++a)
         for (b = 0; b < cols; ++b)
             this->M[a][b] += right.M[a][b];
@@ -67,7 +67,7 @@ Matrix Matrix::operator-(const Matrix& right) const{
         throw SizeException("Size mismatch while substracting matrices!");
     
     Matrix ret = *this;
-    long a, b;
+    size_t a, b;
     for (a = 0; a < rows; ++a)
         for (b = 0; b < cols; ++b)
             ret.M[a][b] -= right.M[a][b];
@@ -78,7 +78,7 @@ Matrix Matrix::operator-=(const Matrix& right) {
     if (rows != right.rows || cols != right.cols)
         throw SizeException("Size mismatch while substracting matrices!");
     
-    long a, b;
+    size_t a, b;
     for (a = 0; a < rows; ++a)
         for (b = 0; b < cols; ++b)
             this->M[a][b] -= right.M[a][b];
@@ -89,7 +89,7 @@ Matrix Matrix::operator-=(const Matrix& right) {
     //divide a number by a matrix (element-wise)
 Matrix operator/(const double a, const Matrix& b) {
     Matrix ret(b.rows, b.cols);
-    long i, j;
+    size_t i, j;
     
     for (i = 0; i < b.rows; ++i)
         for (j = 0; j < b.cols; ++j)
@@ -102,7 +102,7 @@ Matrix operator/(const double a, const Matrix& b) {
 Matrix Matrix::operator/(const double right) const{
     Matrix res(rows, cols);
     
-    long a, b;
+    size_t a, b;
     for (a = 0; a < rows; ++a)
         for (b = 0; b < cols; ++b)
             res.M[a][b] = (this->M[a][b]) / right;
@@ -112,7 +112,7 @@ Matrix Matrix::operator/(const double right) const{
 
     //divide a matrix by a number (element-wise)
 Matrix Matrix::operator/=(const double right) {
-    long a, b;
+    size_t a, b;
     for (a = 0; a < rows; ++a)
         for (b = 0; b < cols; ++b)
             (this->M[a][b]) /= right;
@@ -127,7 +127,7 @@ Matrix Matrix::Hadamard(const Matrix& right) const {
         throw SizeException("Size mismatch while caclulating Hadamard product");
 
     Matrix res(rows, cols);
-    long a, b;
+    size_t a, b;
     for (a = 0; a < rows; ++a)
         for (b = 0; b < cols; ++b)
             res.M[a][b] = (this->M[a][b]) * right.M[a][b];
@@ -144,13 +144,18 @@ Matrix Matrix::operator*(const Matrix& right) {
         throw SizeException(msg);
     }
     
-    long a, b, c, d;
-    Matrix res(rows, right.cols), k(cols, 1);;
-    for (a=0; a<rows; ++a)
-        for (b = 0, d = 0; b < right.cols && d < right.cols; ++b, ++d) {
-            for (c = 0; c < cols; ++c) k.M[c][0]=right.M[c][d];
-            res.M[a][b] = Mult_Row_by_Column((*this)[a], k);
+    size_t a, b, c;
+    Matrix res(rows, right.cols), k(cols, 1);
+    for (a=0; a<rows; ++a) {
+        for (b = 0; b < right.cols; ++b) {
+            for (c = 0; c < cols; ++c) k.M[c][0]=right.M[c][b];
+            if (rows==1)
+                res.M[a][b] = Mult_Row_by_Column((*this), k);
+            else
+                res.M[a][b] = Mult_Row_by_Column((*this)[a], k);
         }
+    }
+
     return res;
 }
 
@@ -159,7 +164,7 @@ Matrix Matrix::operator*(const Matrix& right) {
 Matrix Matrix::operator*(const double& right) const{
     Matrix res(rows, cols);
     
-    long a,b;
+    size_t a,b;
     for (a = 0; a < res.rows; ++a)
         for (b = 0; b < res.cols; ++b)
             res.M[a][b] = (this->M[a][b])*right;
@@ -184,6 +189,7 @@ Matrix& Matrix::operator=(const Matrix& m) {
 Matrix& Matrix::operator[](const long i) {
     static Matrix ret;
     
+    
     if (rows != 1) {
         if (i < 0 || i == rows)
             throw SizeException("Index out of range");
@@ -200,5 +206,5 @@ Matrix& Matrix::operator[](const long i) {
         ret.M[0][0] = this->M[0][i];
     }
     
-    return ret;
+        return ret;
 }

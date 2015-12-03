@@ -58,6 +58,8 @@ class Matrix {
 public:
     Matrix();
     Matrix(long rows, long cols);
+    Matrix(std::vector<double>);
+    Matrix(std::vector< std::vector<double> >);
     
     void Random(long min = 0, long max = RAND_MAX);
     void Zeroes();
@@ -104,7 +106,7 @@ public:
     }
     
     bool operator==(const Matrix& mat) {
-        long a, b;
+        size_t a, b;
         int ex1, ex2;
         if (rows != mat.rows || cols != mat.cols) return false;
         
@@ -130,7 +132,7 @@ public:
     
     
     friend std::ostream& operator<<(std::ostream& os, Matrix obj){
-        long a,b;
+        size_t a,b;
         std::ios_base::fmtflags t=os.flags();
         if (obj.prettified)
             os << std::fixed << std::setprecision(3);
@@ -152,7 +154,7 @@ public:
 private:
     double _Random(long min = 0, long max = RAND_MAX);
     double Mult_Row_by_Column(Matrix row, Matrix col);
-    long rows, cols;
+    size_t rows, cols;
     bool modified, prettified;
         //'M' is a vector of vectors that holds all the values
     std::vector< std::vector<double> > M, _Transposed, _Identity;
