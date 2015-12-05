@@ -12,6 +12,7 @@
 
 #include "Matrix.hpp"
 
+
     //default constructor constructs an ordinary number
 Matrix::Matrix() {
     this->rows = this->cols = 1;
@@ -30,18 +31,20 @@ Matrix::Matrix(long rows, long cols) {
 }
 
 Matrix::Matrix(std::vector<double> data) {
-    this->cols=data.size();
-    this->rows=1;
-    this->M.resize(1);
-    this->M[0].assign(data.begin(), data.end());
-    this->modified=true, this->prettified=false;
+    this->FromData(data);
 }
 
 Matrix::Matrix(std::vector< std::vector<double> > data) {
-    this->rows=data.size();
-    this->cols=data[0].size();
-    this->M.assign(data.begin(), data.end());
-    this->modified=true, this->prettified=false;
+    this->FromData(data);
+}
+
+Matrix::Matrix(std::string fname) {
+    if (!this->FromFile(fname)) {
+        this->rows = this->cols = 1;
+        this->M.resize(rows);
+        this->M[0].resize(cols);
+        this->modified=true, this->prettified=false;
+    }
 }
 
     //transpose a matrix
@@ -129,7 +132,7 @@ void Matrix::Random(long min, long max) {
     modified=true;
 }
 
-void Matrix::Zeroes() {
+void Matrix::Zeros() {
     long a, b;
     for (a = 0; a < rows; ++a)
         for (b = 0; b < cols; ++b)
@@ -143,6 +146,21 @@ void Matrix::Ones() {
         for (b = 0; b < cols; ++b)
             this->M[a][b] = 1.0;
     modified=true;
+}
+
+void Matrix::FromData(std::vector< std::vector<double> > data) {
+    this->rows=data.size();
+    this->cols=data[0].size();
+    this->M.assign(data.begin(), data.end());
+    this->modified=true, this->prettified=false;
+}
+
+void Matrix::FromData(std::vector<double> data) {
+    this->rows=1;
+    this->cols=data.size();
+    this->M.resize(1);
+    this->M[0].assign(data.begin(), data.end());
+    this->modified=true, this->prettified=false;
 }
 
     //fill a matrix with data from a file

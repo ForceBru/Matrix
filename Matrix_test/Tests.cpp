@@ -197,6 +197,13 @@ void Test(void) {
             for (i = 0; i < a.Rows();++i)
                 for (j = 0; j < a.Cols();++j)
                     if (a[i][j] != C[i][j]) cout << "\nDifference: " << a[i][j] << " != " << C[i][j] << endl;
+            cout << "\n\n";
+            
+            for (i = 0; i < b.Rows();++i)
+                for (j = 0; j < b.Cols();++j)
+                    if (b[i][j] != D[i][j]) cout << "\nDifference: " << b[i][j] << " != " << D[i][j] << endl;
+            
+            cout << "If this fails, it's OK as comparing doubles is pretty difficult" << endl;
         }
     }
         // --- Testing filling from file

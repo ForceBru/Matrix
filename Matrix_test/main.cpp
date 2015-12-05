@@ -6,19 +6,14 @@
 //
 
 
-#include <iostream>
-#include <algorithm>
-
 #include "Matrix.hpp"
-
 #include "Tests.hpp"
 
 using namespace std;
 
-
 int main(int argc, const char * argv[]) {
     
-    srand((unsigned int)time(NULL));
+    Matrix::Init();
     
     
     Tests::Test(); //perform some tests

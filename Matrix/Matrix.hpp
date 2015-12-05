@@ -8,6 +8,8 @@
 #ifndef Matrix_hpp
 #define Matrix_hpp
 
+#pragma once
+
 #include <ctime>
 #include <cstdlib>
 #include <cmath>
@@ -57,14 +59,17 @@ std::string to_string(const T& value)
 class Matrix {
 public:
     Matrix();
+    Matrix(std::string fname);
     Matrix(long rows, long cols);
     Matrix(std::vector<double>);
     Matrix(std::vector< std::vector<double> >);
     
     void Random(long min = 0, long max = RAND_MAX);
-    void Zeroes();
+    void Zeros();
     void Ones();
     int FromFile(std::string fname);
+    void FromData(std::vector<double> data);
+    void FromData(std::vector< std::vector<double> > data);
     void Reshape(long rows, long cols);
     Matrix T();
     long Rows() { return this->rows; }
@@ -107,27 +112,24 @@ public:
     
     bool operator==(const Matrix& mat) {
         size_t a, b;
-        int ex1, ex2;
-        if (rows != mat.rows || cols != mat.cols) return false;
+
+        if (rows != mat.rows || cols != mat.cols)
+            return false;
         
         for (a = 0; a < rows; ++a)
-            for (b = 0; b < cols; ++b) {
-                // split numbers into binary significands (sig1 and sig2)
-                // and exponent for 2 (ex1 and ex2)
-                double sig1 = frexp(M[a][b], &ex1), sig2 = frexp(mat.M[a][b], &ex2);
-                if (
-                    (ex1 != ex2)   || // first of all, the exponents should be equal
-                    (sig1 != sig2) || // cheap check whether significands are equal
-                    // some equal numbers could still be considered as non-equal
-                    // so this code is here to be completely sure
-                    (std::abs(sig1 - sig2) > std::numeric_limits<double>::epsilon()*1.6)
-                    ) return false;
-            }
+            for (b = 0; b < cols; ++b)
+                if (std::fabs(M[a][b] - mat.M[a][b]) > std::numeric_limits<double>::epsilon()*10)
+                    return false;
+            
         return true;
     }
     
     inline bool operator!=(const Matrix& m) {
         return !(*this == m);
+    }
+    
+    static void Init() {
+        srand((unsigned int)time(NULL));
     }
     
     
@@ -159,6 +161,7 @@ private:
         //'M' is a vector of vectors that holds all the values
     std::vector< std::vector<double> > M, _Transposed, _Identity;
 };
+
 
     //number + matrix
 inline Matrix operator+(double left, Matrix& right) {
