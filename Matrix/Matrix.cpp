@@ -173,22 +173,19 @@ int Matrix::FromFile(std::string fname) {
     std::string line;
     cols=rows=0;
     M.clear();
-    char *end;
-    while (std::getline(f, line)) {
-        std::vector<double> tmp;
 
-        while (line.size()) {
-            tmp.push_back(std::strtod(line.c_str(), &end));
-            line.assign(std::string(end));
-        }
+    while (std::getline(f, line)) {
+        line=rtrim(line);
+        if (! line.length())
+            break;
         
-        if (rows!=0 && tmp.size()!=cols) {
-            modified=true;
-            f.close();
-            return 0;
+        double value;
+        std::istringstream ss(line);
+        M.push_back(std::vector<double>());
+        while (ss >> value) {
+            (M.back()).push_back(value);
         }
-        M.push_back(tmp);
-        ++rows, cols=tmp.size();
+        ++rows, cols=M.end()->size();
     }
     rows=M.size(), cols=M[0].size();
     f.close();

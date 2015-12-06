@@ -12,7 +12,7 @@
 
 
     // multiply a row of one matrix by a column of another matrix
-double Matrix::Mult_Row_by_Column(Matrix row, Matrix col) {
+inline double Matrix::Mult_Row_by_Column(Matrix row, Matrix col) {
     double res; size_t a;
     for (a = 0, res = 0; a < row.Cols(); ++a)
         res += static_cast<double>(row[a]) * static_cast<double>(col[a]);

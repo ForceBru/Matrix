@@ -27,6 +27,26 @@
 #include <limits>
 #include <exception>
 #include <string>
+#include <functional>
+#include <cctype>
+#include <locale>
+
+    // trim from start
+static inline std::string &ltrim(std::string &s) {
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
+    return s;
+}
+
+    // trim from end
+static inline std::string &rtrim(std::string &s) {
+    s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+    return s;
+}
+
+    // trim from both ends
+static inline std::string &trim(std::string &s) {
+    return ltrim(rtrim(s));
+}
 
 
 template<typename T>
@@ -146,7 +166,8 @@ public:
                 os << (obj.M)[a][b];
                 if (b != obj.cols-1) os << ' ';
             }
-            os << std::endl;
+            if (obj.rows > 1)
+                os << std::endl;
         }
         
         os.flags(t);
@@ -155,7 +176,7 @@ public:
     }
 private:
     double _Random(long min = 0, long max = RAND_MAX);
-    double Mult_Row_by_Column(Matrix row, Matrix col);
+    inline double Mult_Row_by_Column(Matrix row, Matrix col);
     size_t rows, cols;
     bool modified, prettified;
         //'M' is a vector of vectors that holds all the values
