@@ -176,7 +176,7 @@ public:
     }
 private:
     double _Random(long min = 0, long max = RAND_MAX);
-    inline double Mult_Row_by_Column(Matrix row, Matrix col);
+    //inline double Mult_Row_by_Column(Matrix row, Matrix col);
     size_t rows, cols;
     bool modified, prettified;
         //'M' is a vector of vectors that holds all the values
