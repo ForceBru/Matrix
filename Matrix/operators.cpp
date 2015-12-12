@@ -142,9 +142,9 @@ Matrix Matrix::operator*(const Matrix& right) {
     
     size_t a, b, c;
 
-    static Matrix res;
+    Matrix res(rows, right.cols);
     
-    if ((res.rows != rows) || (res.cols != right.cols)) res.Reshape(rows, right.cols);
+//    if ((res.rows != rows) || (res.cols != right.cols)) res.Reshape(rows, right.cols);
 
     
     if (right.IsCol()) {
