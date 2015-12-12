@@ -168,15 +168,6 @@ Matrix Matrix::operator*(const Matrix& right) {
             for (c = 0, tmp = 0; c < cols; ++c) tmp += M[a][c] * right.M[c][b];
             res.M[a][b] = tmp;
         }
-
-    Matrix res(rows, right.cols), k(cols, 1);
-    for (a=0; a<rows; ++a) {
-	for (b = 0; b < right.cols; ++b) {
-		double tmp=0;
-		for (c=0; c<cols; ++c) tmp+=M[a][c]*right.M[c][b];
-		res.M[a][b]=tmp;
-	}
-    }
     }
 
     return res;
