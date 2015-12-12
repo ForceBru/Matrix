@@ -11,15 +11,6 @@
 
 
 
-    // multiply a row of one matrix by a column of another matrix
-inline double Matrix::Mult_Row_by_Column(Matrix row, Matrix col) {
-    double res; size_t a;
-    for (a = 0, res = 0; a < row.Cols(); ++a)
-        res += static_cast<double>(row[a]) * static_cast<double>(col[a]);
-    
-    return res;
-}
-
     //append double to a matrix (element-wise)
 Matrix Matrix::operator+(const double& right) const {
     Matrix ret = *this;
@@ -144,15 +135,36 @@ Matrix Matrix::operator*(const Matrix& right) {
         throw SizeException(msg);
     }
     
+    if (right.IsNum())
+        return this->operator*(right.M[0][0]);
+    
+    
     size_t a, b, c;
-    Matrix res(rows, right.cols), k(cols, 1);
-    for (a=0; a<rows; ++a) {
+    static Matrix res;
+    
+    if ((res.rows != rows) || (res.cols != right.cols)) res.Reshape(rows, right.cols);
+
+    
+    if (right.IsCol()) {
+        for (a = 0; a < cols; ++a)
+            res.M[0][0] += M[0][a] * right.M[a][0];
+        return res;
+    } else if (this->IsSquare(2) && right.IsSquare(2)) {
+            // loop unrolling for 2x2 matrices
+        res.M[0][0] = M[0][0] * right.M[0][0] + M[0][1] * right.M[1][0],
+        res.M[0][1] = M[0][0] * right.M[0][1] + M[0][1] * right.M[1][1],
+        res.M[1][0] = M[1][0] * right.M[0][0] + M[1][1] * right.M[1][0],
+        res.M[1][1] = M[1][0] * right.M[0][1] + M[1][1] * right.M[1][1];
+        
+        return res;
+    }
+    
+
+    for (a = 0; a < rows; ++a) {
         for (b = 0; b < right.cols; ++b) {
-            for (c = 0; c < cols; ++c) k.M[c][0]=right.M[c][b];
-            if (rows==1)
-                res.M[a][b] = Mult_Row_by_Column((*this), k);
-            else
-                res.M[a][b] = Mult_Row_by_Column((*this)[a], k);
+            double tmp;
+            for (c = 0, tmp = 0; c < cols; ++c) tmp += M[a][c] * right.M[c][b];
+            res.M[a][b] = tmp;
         }
     }
 

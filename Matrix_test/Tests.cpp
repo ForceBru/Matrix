@@ -64,9 +64,37 @@ void Test(void) {
     cout << "\tTest " << Tests::tests.N+1 << ": " << Tests::tests.names[Tests::tests.N] << '\n' << endl;
     try {
             //multiply two matrices (of appropriate size!)
-        cout << "Multiplying matrices (A*B)..." << endl;
-        c = a * b;
+        cout << "Multiplying matrices ( (random()*A) * B ) " << TIMES << " times, please wait...\n" << endl;
+        unsigned long r;
+#if __cplusplus > 199711L
+        using namespace std::chrono;
+        
+        high_resolution_clock::time_point start, end;
+        start=high_resolution_clock::now();
+#else
+        time_t start, end;
+        start=time(NULL);
+#endif
+        for (r=0; r<TIMES; ++r) {
+            c = (random()*a) * b;
+        }
+#if __cplusplus > 199711L
+        end=high_resolution_clock::now();
+        duration<double> time_span=duration_cast< duration<double> >(end-start);
+#else
+        end=time(NULL);
+        double time_span=difftime(end, start);
+#endif
+        
         cout << c << endl;
+        
+        cout << "Multiplied two matrices " << TIMES << " times in ";
+#if __cplusplus > 199711L
+        cout << time_span.count();
+#else
+        cout << time_span;
+#endif
+        cout << " seconds." << endl;
         cout << Tests::S(Tests::tests.N++) << endl;
     } catch (const SizeException& e){
             //exception is thrown if the matrices are not of the appropriate size

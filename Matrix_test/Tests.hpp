@@ -12,7 +12,15 @@
 #include <exception>
 #include "Matrix.hpp"
 
+#if __cplusplus > 199711L
+#include <chrono>
+#else
+#include <ctime>
+#endif
+
 using namespace std;
+
+#define TIMES 2000000UL
 
 namespace Tests {
 #define number_of_tests 13

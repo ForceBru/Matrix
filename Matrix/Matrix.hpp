@@ -92,8 +92,12 @@ public:
     void FromData(std::vector< std::vector<double> > data);
     void Reshape(long rows, long cols);
     Matrix T();
-    long Rows() { return this->rows; }
-    long Cols() { return this->cols; }
+    long Rows() const { return this->rows; }
+    long Cols() const { return this->cols; }
+    bool IsVect() const { if (rows==1) return true; return false; }
+    bool IsCol() const { if (cols==1) return true; return false; }
+    bool IsNum() const { if ((rows==1) && (cols==1)) return true; return false; }
+    bool IsSquare(unsigned n) const { if (rows==cols==n) return true; return false; }
     Matrix Transpose() { return this->T(); }
     Matrix Identity();
     Matrix Hadamard(const Matrix& right) const;
