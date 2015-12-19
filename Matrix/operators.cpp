@@ -131,9 +131,9 @@ Matrix Matrix::Hadamard(const Matrix& right) const {
     // multiply a matrix by another matrix
 Matrix Matrix::operator*(const Matrix& right) {
     if (cols != right.rows) {
-	std::string msg=std::string("Size mismatch while multiplying matrices: ").append(to_string(rows).append(std::string("X")).append(to_string(cols)));
-	msg.append(std::string(" vs ").append(to_string(right.rows)).append(std::string("X")).append(to_string(right.cols)));
-	throw SizeException(msg);
+        std::string msg=std::string("Size mismatch while multiplying matrices: ").append(to_string(rows).append(std::string("X")).append(to_string(cols)));
+        msg.append(std::string(" vs ").append(to_string(right.rows)).append(std::string("X")).append(to_string(right.cols)));
+        throw SizeException(msg);
     }
     
     if (right.IsNum())
@@ -144,8 +144,6 @@ Matrix Matrix::operator*(const Matrix& right) {
 
     Matrix res(rows, right.cols);
     
-//    if ((res.rows != rows) || (res.cols != right.cols)) res.Reshape(rows, right.cols);
-
     
     if (right.IsCol()) {
         for (a = 0; a < cols; ++a)

@@ -26,7 +26,7 @@ Matrix::Matrix(long rows, long cols) {
     long a;
     this->rows = rows, this->cols = cols;
     this->M.resize(rows);
-    for (a = 0;a < rows; ++a) this->M[a].resize(cols);
+    for (a = 0; a < rows; ++a) this->M[a].resize(cols);
     this->modified=true, this->prettified=false;
 }
 

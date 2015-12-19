@@ -24,6 +24,8 @@ using namespace std;
 
 namespace Tests {
 #define number_of_tests 13
+    
+    double Time();
 
     struct {
         unsigned tests[number_of_tests], N, failed, success;

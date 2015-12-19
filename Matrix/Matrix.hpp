@@ -84,7 +84,7 @@ public:
     Matrix(std::vector<double>);
     Matrix(std::vector< std::vector<double> >);
     
-    void Random(long min = 0, long max = RAND_MAX);
+    void Random(long min = 0, long max = 1);
     void Zeros();
     void Ones();
     int FromFile(std::string fname);

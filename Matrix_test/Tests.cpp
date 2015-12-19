@@ -20,6 +20,23 @@ namespace Tests {
         return string("[!] Failed: ").append(to_string(tests.failed)).append(" out of ").append(to_string(number_of_tests)).append("\n\n");
     }
     
+    double Time() {
+#if __cplusplus > 199711L
+        using namespace std::chrono;
+        
+        high_resolution_clock::time_point _time;
+        _time=high_resolution_clock::now();
+        
+        return duration_cast<milliseconds>(_time.time_since_epoch()).count()/1000.0;
+#else
+        time_t _time;
+        _time=time(NULL);
+        
+        return static_cast<double>(_time);
+#endif
+    }
+    
+    
 void Test(void) {
     
     Tests::tests.names[0]="Filling and assigning";
@@ -44,8 +61,8 @@ void Test(void) {
     cout << "\tTest " << Tests::tests.N+1 << ": " << Tests::tests.names[Tests::tests.N] << '\n' << endl;
     try {
             //fill matrices with random values
-        a.Random(0, 1);
-        b.Random(0, 1);
+        a.Random();
+        b.Random();
         cout << Tests::S(Tests::tests.N++) << endl;
     } catch (exception& e) {
         cout << Tests::F(Tests::tests.N++) << e.what() << endl;
@@ -64,37 +81,19 @@ void Test(void) {
     cout << "\tTest " << Tests::tests.N+1 << ": " << Tests::tests.names[Tests::tests.N] << '\n' << endl;
     try {
             //multiply two matrices (of appropriate size!)
-        cout << "Multiplying matrices ( (random()*A) * B ) " << TIMES << " times, please wait...\n" << endl;
+        cout << "Multiplying matrices ( A * B ) " << TIMES << " times, please wait...\n" << endl;
         unsigned long r;
-#if __cplusplus > 199711L
-        using namespace std::chrono;
         
-        high_resolution_clock::time_point start, end;
-        start=high_resolution_clock::now();
-#else
-        time_t start, end;
-        start=time(NULL);
-#endif
+        double start=Time();
+        
         for (r=0; r<TIMES; ++r) {
-            c = (random()*a) * b;
+            c = a * b;
         }
-#if __cplusplus > 199711L
-        end=high_resolution_clock::now();
-        duration<double> time_span=duration_cast< duration<double> >(end-start);
-#else
-        end=time(NULL);
-        double time_span=difftime(end, start);
-#endif
+
         
         cout << c << endl;
         
-        cout << "Multiplied two matrices " << TIMES << " times in ";
-#if __cplusplus > 199711L
-        cout << time_span.count();
-#else
-        cout << time_span;
-#endif
-        cout << " seconds." << endl;
+        cout << "Multiplied two matrices " << TIMES << " times in " << Time() - start << " seconds." << endl;
         cout << Tests::S(Tests::tests.N++) << endl;
     } catch (const SizeException& e){
             //exception is thrown if the matrices are not of the appropriate size
@@ -109,8 +108,7 @@ void Test(void) {
         aHat += a;
             //and then substract
         aHat -= a;
-        
-        cout << aHat << endl << "must be equal to\n\n" << a << endl;
+    
             //now aHat should be equal to a
         if (aHat != a) cout << Tests::F(Tests::tests.N++) << endl;
         else cout << Tests::S(Tests::tests.N++) << endl;
@@ -161,7 +159,7 @@ void Test(void) {
     
     cout << "\tTest " << Tests::tests.N+1 << ": " << Tests::tests.names[Tests::tests.N] << '\n' << endl;
     try {
-        a.Random(0,1);
+        a.Random();
         cout << " Matrix A:"<< endl;
         cout << a << endl;
         cout << " exp(A) is" << endl;
@@ -203,7 +201,7 @@ void Test(void) {
     cout << "\tTest " << Tests::tests.N+1 << ": " << Tests::tests.names[Tests::tests.N] << '\n' << endl;
     {
         Matrix a(2, 3), b(5, 3);
-        a.Random(0, 1), b.Random(1, 2);
+        a.Random(), b.Random(1, 2);
         
         ofstream f("matrix_a.txt"), g("matrix_b.txt");
         
