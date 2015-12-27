@@ -197,23 +197,20 @@ Matrix& Matrix::operator=(const Matrix& m) {
 
     //get a row of a matrix or its element
 Matrix& Matrix::operator[](const long i) const {
+    
+    if (i < 0 || i == rows)
+        throw SizeException("Index out of range");
+    
     static Matrix ret;
     
-    
     if (rows != 1) {
-	if (i < 0 || i == rows)
-	    throw SizeException("Index out of range");
+        ret.Reshape(1, cols);
+        long a;
 	
-	ret.Reshape(1, cols);
-	long a;
-	
-	for (a = 0; a < cols; ++a) ret.M[0][a] = this->M[i][a];
+        for (a = 0; a < cols; ++a) ret.M[0][a] = this->M[i][a];
     } else {
-	if (i < 0 || i == cols)
-	    throw SizeException("Index out of range");
-	
-	ret.Reshape(1, 1);
-	ret.M[0][0] = this->M[0][i];
+        ret.Reshape(1, 1);
+        ret.M[0][0] = this->M[0][i];
     }
     
 	return ret;
