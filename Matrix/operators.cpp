@@ -44,7 +44,6 @@ Matrix& Matrix::operator+=(const Matrix& right) {
     for (a = 0; a < rows; ++a)
 	for (b = 0; b < cols; ++b)
 	    this->M[a][b] += right.M[a][b];
-    modified=true;
     return *this;
 }
 
@@ -74,7 +73,6 @@ Matrix& Matrix::operator-=(const Matrix& right) {
     for (a = 0; a < rows; ++a)
 	for (b = 0; b < cols; ++b)
 	    this->M[a][b] -= right.M[a][b];
-    modified=true;
     return *this;
 }
 
@@ -191,7 +189,7 @@ Matrix& Matrix::operator=(const Matrix& m) {
 	this->cols = m.cols;
 	(this->M).assign(m.M.begin(), m.M.end());
 	this->Reshape(this->rows, this->cols);
-	this->modified=true, this->prettified=false;
+	this->prettified=false;
     }
 
     return *this;

@@ -81,16 +81,16 @@ public:
     Matrix();
     Matrix(std::string fname);
     Matrix(long rows, long cols);
-    Matrix(std::vector<double>);
-    Matrix(std::vector< std::vector<double> >);
+    Matrix(const std::vector<double>&);
+    Matrix(const std::vector< std::vector<double> >&);
     
         // Fill matrix with data
     void Random(long min = 0, long max = 1);
     void Zeros();
     void Ones();
     int FromFile(std::string fname);
-    void FromData(std::vector<double> data);
-    void FromData(std::vector< std::vector<double> > data);
+    void FromData(const std::vector<double>& data);
+    void FromData(const std::vector< std::vector<double> >& data);
     
     void Reshape(long rows, long cols);
     
@@ -188,11 +188,10 @@ public:
     
 private:
     double _Random(long min = 0, long max = RAND_MAX);
-    //inline double Mult_Row_by_Column(Matrix row, Matrix col);
     size_t rows, cols;
-    bool modified, prettified;
+    bool prettified;
         //'M' is a vector of vectors that holds all the values
-    std::vector< std::vector<double> > M, _Transposed, _Identity;
+    std::vector< std::vector<double> > M;
 };
 
 
@@ -200,20 +199,11 @@ private:
 inline Matrix operator+(double left, const Matrix& right) {
     return right + left;
 }
-//    //number + matrix
-//inline Matrix operator+(double left, const Matrix right) {
-//    return right + left;
-//}
 
     //number - matrix
 inline Matrix operator-(double left, const Matrix& right) {
     return (-right) + left;
 }
-
-//    //number - matrix
-//inline Matrix operator-(double left, const Matrix right) {
-//    return (-right) + left;
-//}
 
     //number * matrix
 inline Matrix operator*(double left, const Matrix& right) {
@@ -223,7 +213,7 @@ inline Matrix operator*(double left, const Matrix& right) {
     // -------------- EXCEPTIONS --------------
 
 /* This exception is thrown when something
- is wrong with the sze of a matrix.
+ is wrong with the size of a matrix.
  For example, if two matrices are not of the
  appropriate sizes (PxN and NxK) or if
  one tries to substract or add matrices of different shapes,

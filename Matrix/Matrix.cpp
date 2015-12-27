@@ -18,7 +18,7 @@ Matrix::Matrix() {
     this->rows = this->cols = 1;
     this->M.resize(rows);
     this->M[0].resize(cols);
-    this->modified=true, this->prettified=false;
+    this->prettified=false;
 }
 
     //construct a matrix of size rows x cols
@@ -27,14 +27,14 @@ Matrix::Matrix(long rows, long cols) {
     this->rows = rows, this->cols = cols;
     this->M.resize(rows);
     for (a = 0; a < rows; ++a) this->M[a].resize(cols);
-    this->modified=true, this->prettified=false;
+    this->prettified=false;
 }
 
-Matrix::Matrix(std::vector<double> data) {
+Matrix::Matrix(const std::vector<double>& data) {
     this->FromData(data);
 }
 
-Matrix::Matrix(std::vector< std::vector<double> > data) {
+Matrix::Matrix(const std::vector< std::vector<double> >& data) {
     this->FromData(data);
 }
 
@@ -43,24 +43,19 @@ Matrix::Matrix(std::string fname) {
         this->rows = this->cols = 1;
         this->M.resize(rows);
         this->M[0].resize(cols);
-        this->modified=true, this->prettified=false;
+        this->prettified=false;
     }
 }
 
     //transpose a matrix
 Matrix Matrix::T() {
     Matrix tmp(cols, rows);
-    if (modified) {
-        long a, b;
-        _Transposed.resize(cols);
-        for (a = 0; a < cols; ++a) {
-            _Transposed[a].resize(rows);
-            for (b = 0; b < rows; ++b)
-                _Transposed[a][b]=this->M[b][a];
-        }
+    long a, b;
+    for (a = 0; a < cols; ++a) {
+        tmp.M.push_back(std::vector<double>());
+        for (b = 0; b < rows; ++b)
+            tmp.M[a].push_back(this->M[b][a]);
     }
-    tmp.M=_Transposed;
-    modified=false;
     return tmp;
 }
 
@@ -70,17 +65,12 @@ Matrix Matrix::Identity() {
         throw SizeException("Matrix must be square to have an identity matrix");
 
     Matrix k(rows,rows);
-    if (modified) {
-        long a, b, c;
-        _Identity.resize(rows);
-        for (a = 0, c = 0; a < rows; a++, c++) {
-            _Identity[a].resize(cols);
-            for (b = 0; b < cols; b++)
-                _Identity[a][b] = (b==c)?1:0;
-        }
+    long a, b, c;
+    for (a = 0, c = 0; a < rows; a++, c++) {
+        k.M.push_back(std::vector<double>());
+        for (b = 0; b < cols; b++)
+            k.M[a].push_back((b==c)?1:0);
     }
-    k.M=_Identity;
-    modified=false;
     return k;
 }
 
@@ -129,7 +119,6 @@ void Matrix::Random(long min, long max) {
     for (a = 0; a < rows; ++a)
         for (b = 0; b < cols; ++b)
             M[a][b] = _Random(min, max);
-    modified=true;
 }
 
 void Matrix::Zeros() {
@@ -137,7 +126,6 @@ void Matrix::Zeros() {
     for (a = 0; a < rows; ++a)
         for (b = 0; b < cols; ++b)
             M[a][b]=0.0;
-    modified=true;
 }
 
 void Matrix::Ones() {
@@ -145,29 +133,28 @@ void Matrix::Ones() {
     for (a = 0; a < rows; ++a)
         for (b = 0; b < cols; ++b)
             this->M[a][b] = 1.0;
-    modified=true;
 }
 
-void Matrix::FromData(std::vector< std::vector<double> > data) {
+void Matrix::FromData(const std::vector< std::vector<double> >& data) {
     this->rows=data.size();
     this->cols=data[0].size();
     this->M.assign(data.begin(), data.end());
-    this->modified=true, this->prettified=false;
+    this->prettified=false;
 }
 
-void Matrix::FromData(std::vector<double> data) {
+void Matrix::FromData(const std::vector<double>& data) {
     this->rows=1;
     this->cols=data.size();
     this->M.resize(1);
     this->M[0].assign(data.begin(), data.end());
-    this->modified=true, this->prettified=false;
+    this->prettified=false;
 }
 
     //fill a matrix with data from a file
 int Matrix::FromFile(std::string fname) {
     std::ifstream f;
     f.open(fname.c_str());
-    modified=prettified=false;
+    prettified=false;
     if (!f.is_open())
         throw FileException();
     std::string line;
@@ -189,7 +176,6 @@ int Matrix::FromFile(std::string fname) {
     }
     rows=M.size(), cols=M[0].size();
     f.close();
-    modified=true;
     return 1;
 }
 
@@ -213,5 +199,4 @@ void Matrix::Reshape(long rows, long cols) {
             this->M[a].resize(cols);
     }
     this->rows=this->M.size(), this->cols=this->M[0].size();
-    modified=true;
 }
