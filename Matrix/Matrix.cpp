@@ -52,9 +52,8 @@ Matrix Matrix::T() {
     Matrix tmp(cols, rows);
     long a, b;
     for (a = 0; a < cols; ++a) {
-        tmp.M.push_back(std::vector<double>());
         for (b = 0; b < rows; ++b)
-            tmp.M[a].push_back(this->M[b][a]);
+            tmp.M[a][b] = this->M[b][a];
     }
     return tmp;
 }
@@ -65,11 +64,10 @@ Matrix Matrix::Identity() {
         throw SizeException("Matrix must be square to have an identity matrix");
 
     Matrix k(rows,rows);
-    long a, b, c;
-    for (a = 0, c = 0; a < rows; a++, c++) {
-        k.M.push_back(std::vector<double>());
+    size_t a, b;
+    for (a = 0; a < rows; a++) {
         for (b = 0; b < cols; b++)
-            k.M[a].push_back((b==c)?1:0);
+            k.M[a][b] = (a==b)?1:0;
     }
     return k;
 }
