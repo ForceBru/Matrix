@@ -151,7 +151,7 @@ void Test(void) {
     try {
             //square a matrix
         cout << " Raising matrix A to power of 2:" << endl;
-        cout << a.sqr() << endl;
+        cout << sqr(a) << endl;
         cout << Tests::S(Tests::tests.N++) << endl;
     } catch (const SizeException& e) {
         cout << Tests::F(Tests::tests.N++) << e.what() << endl;

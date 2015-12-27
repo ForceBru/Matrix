@@ -36,7 +36,7 @@ Matrix Matrix::operator+(const Matrix& right) const{
     return ret;
 }
 
-Matrix Matrix::operator+=(const Matrix& right) {
+Matrix& Matrix::operator+=(const Matrix& right) {
     if (rows != right.rows || cols != right.cols)
 	throw SizeException("Size mismatch while adding matrices!");
     
@@ -66,7 +66,7 @@ Matrix Matrix::operator-(const Matrix& right) const{
     return ret;
 }
 
-Matrix Matrix::operator-=(const Matrix& right) {
+Matrix& Matrix::operator-=(const Matrix& right) {
     if (rows != right.rows || cols != right.cols)
 	throw SizeException("Size mismatch while substracting matrices!");
     
@@ -91,7 +91,7 @@ Matrix operator/(const double a, const Matrix& b) {
 }
 
     //divide a matrix by a number (element-wise)
-Matrix Matrix::operator/(const double right) const{
+Matrix Matrix::operator/(const double& right) const{
     Matrix res(rows, cols);
     
     size_t a, b;
@@ -103,7 +103,7 @@ Matrix Matrix::operator/(const double right) const{
 }
 
     //divide a matrix by a number (element-wise)
-Matrix Matrix::operator/=(const double right) {
+Matrix& Matrix::operator/=(const double& right) {
     size_t a, b;
     for (a = 0; a < rows; ++a)
 	for (b = 0; b < cols; ++b)
@@ -129,7 +129,7 @@ Matrix Matrix::Hadamard(const Matrix& right) const {
 
 
     // multiply a matrix by another matrix
-Matrix Matrix::operator*(const Matrix& right) {
+Matrix Matrix::operator*(const Matrix& right) const {
     if (cols != right.rows) {
         std::string msg=std::string("Size mismatch while multiplying matrices: ").append(to_string(rows).append(std::string("X")).append(to_string(cols)));
         msg.append(std::string(" vs ").append(to_string(right.rows)).append(std::string("X")).append(to_string(right.cols)));
@@ -198,7 +198,7 @@ Matrix& Matrix::operator=(const Matrix& m) {
 }
 
     //get a row of a matrix or its element
-Matrix& Matrix::operator[](const long i) {
+Matrix& Matrix::operator[](const long i) const {
     static Matrix ret;
     
     

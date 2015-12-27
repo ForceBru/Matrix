@@ -84,42 +84,48 @@ public:
     Matrix(std::vector<double>);
     Matrix(std::vector< std::vector<double> >);
     
+        // Fill matrix with data
     void Random(long min = 0, long max = 1);
     void Zeros();
     void Ones();
     int FromFile(std::string fname);
     void FromData(std::vector<double> data);
     void FromData(std::vector< std::vector<double> > data);
+    
     void Reshape(long rows, long cols);
-    Matrix T();
+    
+        // Get properties of a Matrix
     long Rows() const { return this->rows; }
     long Cols() const { return this->cols; }
     bool IsVect() const { if (rows==1) return true; return false; }
     bool IsCol() const { if (cols==1) return true; return false; }
     bool IsNum() const { if ((rows==1) && (cols==1)) return true; return false; }
     bool IsSquare(unsigned n) const { if (rows==cols==n) return true; return false; }
+    
+        // Apply mathematical operations to a Matrix
+    Matrix T();
     Matrix Transpose() { return this->T(); }
     Matrix Identity();
     Matrix Hadamard(const Matrix& right) const;
-    Matrix sqr();
     Matrix& Prettify();
 
-    friend Matrix exp(Matrix);
+    friend Matrix exp(const Matrix&);
+    friend Matrix sqr(const Matrix&);
     friend Matrix operator/(const double, const Matrix& );
     
-    Matrix& operator=(const Matrix&);
-    Matrix operator+(const Matrix& right) const;
-    Matrix operator+(const double& right) const;
-    Matrix operator+=(const Matrix& right);
-    Matrix operator-() const;
-    Matrix operator-(const Matrix& right) const;
-    Matrix operator-=(const Matrix& right);
-    Matrix operator*(const Matrix& right);
-    Matrix operator*(const double& right) const;
-    Matrix operator/(const double right) const;
-    Matrix operator/=(const double right);
+    Matrix& operator= (const Matrix&);
+    Matrix  operator+ (const Matrix& right) const;
+    Matrix  operator+ (const double& right) const;
+    Matrix& operator+=(const Matrix& right);
+    Matrix  operator- ()                    const;
+    Matrix  operator- (const Matrix& right) const;
+    Matrix& operator-=(const Matrix& right);
+    Matrix  operator* (const Matrix& right) const;
+    Matrix  operator* (const double& right) const;
+    Matrix  operator/ (const double& right) const;
+    Matrix& operator/=(const double& right);
     
-    Matrix& operator[](const long);
+    Matrix& operator[](const long) const;
     
     explicit operator double() const {
         if (rows == 1 && cols == 1) return M[0][0];
@@ -152,7 +158,7 @@ public:
         return !(*this == m);
     }
     
-    static void Init() {
+    static inline void Init() {
         srand((unsigned int)time(NULL));
     }
     
@@ -178,6 +184,8 @@ public:
         obj.prettified=false;
         return os;
     }
+    
+    
 private:
     double _Random(long min = 0, long max = RAND_MAX);
     //inline double Mult_Row_by_Column(Matrix row, Matrix col);
@@ -189,26 +197,26 @@ private:
 
 
     //number + matrix
-inline Matrix operator+(double left, Matrix& right) {
+inline Matrix operator+(double left, const Matrix& right) {
     return right + left;
 }
-    //number + matrix
-inline Matrix operator+(double left, Matrix right) {
-    return right + left;
-}
+//    //number + matrix
+//inline Matrix operator+(double left, const Matrix right) {
+//    return right + left;
+//}
 
     //number - matrix
-inline Matrix operator-(double left, Matrix& right) {
+inline Matrix operator-(double left, const Matrix& right) {
     return (-right) + left;
 }
 
-    //number - matrix
-inline Matrix operator-(double left, Matrix right) {
-    return (-right) + left;
-}
+//    //number - matrix
+//inline Matrix operator-(double left, const Matrix right) {
+//    return (-right) + left;
+//}
 
     //number * matrix
-inline Matrix operator*(double left, Matrix& right) {
+inline Matrix operator*(double left, const Matrix& right) {
     return right * left;
 }
 

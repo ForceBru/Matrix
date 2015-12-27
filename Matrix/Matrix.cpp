@@ -85,7 +85,7 @@ Matrix Matrix::Identity() {
 }
 
     //exponential of a matrix (element-wise)
-Matrix exp(Matrix A){
+Matrix exp(const Matrix& A){
     long k, i;
     Matrix E(A.Rows(), A.Cols());
     
@@ -97,11 +97,11 @@ Matrix exp(Matrix A){
 
 
     //raise a matrix to power of 2
-Matrix Matrix::sqr() {
-    if (rows!=cols)
+Matrix sqr(const Matrix& A) {
+    if (A.rows != A.cols)
         throw SizeException("Matrix must be square to be raised to power of 2");
     else
-        return (*this) * (*this);
+        return A * A;
 }
 
 Matrix& Matrix::Prettify() {
