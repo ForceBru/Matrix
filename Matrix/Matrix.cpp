@@ -16,17 +16,14 @@
     //default constructor constructs an ordinary number
 Matrix::Matrix() {
     this->rows = this->cols = 1;
-    this->M.resize(rows);
-    this->M[0].resize(cols);
+    this->M.resize(1);
     this->prettified=false;
 }
 
     //construct a matrix of size rows x cols
 Matrix::Matrix(long rows, long cols) {
-    long a;
     this->rows = rows, this->cols = cols;
-    this->M.resize(rows);
-    for (a = 0; a < rows; ++a) this->M[a].resize(cols);
+    this->M.resize(rows*cols);
     this->prettified=false;
 }
 
@@ -41,8 +38,7 @@ Matrix::Matrix(const std::vector< std::vector<double> >& data) {
 Matrix::Matrix(std::string fname) {
     if (!this->FromFile(fname)) {
         this->rows = this->cols = 1;
-        this->M.resize(rows);
-        this->M[0].resize(cols);
+        this->M.resize(1);
         this->prettified=false;
     }
 }
@@ -53,7 +49,7 @@ Matrix Matrix::T() {
     long a, b;
     for (a = 0; a < cols; ++a) {
         for (b = 0; b < rows; ++b)
-            tmp.M[a][b] = this->M[b][a];
+            tmp.M[a * rows + b] = this->M[b * cols + a];
     }
     return tmp;
 }
@@ -67,7 +63,7 @@ Matrix Matrix::Identity() {
     size_t a, b;
     for (a = 0; a < rows; a++) {
         for (b = 0; b < cols; b++)
-            k.M[a][b] = (a==b)?1:0;
+            k.M[a * cols + b] = (a==b)?1:0;
     }
     return k;
 }
@@ -79,7 +75,7 @@ Matrix exp(const Matrix& A){
     
     for (k = 0; k < A.Rows(); k++)
         for (i = 0; i < A.Cols(); i++)
-            E.M[k][i] = exp(A.M[k][i]);
+            E.M[k * (A.Cols()) + i] = exp(A.M[k * (A.Cols()) + i]);
     return E;
 }
 
@@ -116,35 +112,40 @@ void Matrix::Random(long min, long max) {
     long a, b;
     for (a = 0; a < rows; ++a)
         for (b = 0; b < cols; ++b)
-            M[a][b] = _Random(min, max);
+            M[a * cols + b] = _Random(min, max);
 }
 
 void Matrix::Zeros() {
     long a, b;
     for (a = 0; a < rows; ++a)
         for (b = 0; b < cols; ++b)
-            M[a][b]=0.0;
+            M[a * cols + b]=0.0;
 }
 
 void Matrix::Ones() {
     long a, b;
     for (a = 0; a < rows; ++a)
         for (b = 0; b < cols; ++b)
-            this->M[a][b] = 1.0;
+            this->M[a * cols + b] = 1.0;
 }
 
 void Matrix::FromData(const std::vector< std::vector<double> >& data) {
     this->rows=data.size();
     this->cols=data[0].size();
-    this->M.assign(data.begin(), data.end());
+    this->M.clear();
+    this->M.resize((this->rows)*(this->cols));
+    for (size_t a = 0; a < this->rows; ++a) {
+        for (size_t b = 0; b < this->cols; ++b) {
+            this->M[a * (this->cols) + b]=data[a][b];
+        }
+    }
     this->prettified=false;
 }
 
 void Matrix::FromData(const std::vector<double>& data) {
     this->rows=1;
     this->cols=data.size();
-    this->M.resize(1);
-    this->M[0].assign(data.begin(), data.end());
+    this->M.assign(data.begin(), data.end());
     this->prettified=false;
 }
 
@@ -159,20 +160,23 @@ int Matrix::FromFile(std::string fname) {
     cols=rows=0;
     M.clear();
 
+    size_t columns;
     while (std::getline(f, line)) {
+        columns=0;
         line=rtrim(line);
         if (! line.length())
             break;
         
         double value;
         std::istringstream ss(line);
-        M.push_back(std::vector<double>());
+
         while (ss >> value) {
-            (M.back()).push_back(value);
+            M.push_back(value);
+            ++columns;
         }
-        ++rows, cols=M.end()->size();
+        
+        ++rows, cols=columns;
     }
-    rows=M.size(), cols=M[0].size();
     f.close();
     return 1;
 }
@@ -180,21 +184,29 @@ int Matrix::FromFile(std::string fname) {
 
 void Matrix::Reshape(long rows, long cols) {
     if (this->rows==rows && this->cols==cols) return; //no need to do anything here
-    if (this->rows > rows) {
-        M.resize(rows);
-    } else if (this->rows<rows) {
-        this->M.resize(rows);
-        for (; this->rows<rows; this->rows++)
-            this->M[this->rows].resize(cols);
+    if ((this->rows > rows) || (this->rows<rows)) {
+        this->M.resize(rows * (this->cols));
     }
+    
+    this->rows=rows;
+    
     if (this->cols > cols) {
-        long a;
-        for (a=0; a<this->rows; ++a)
-            M[a].resize(cols);
+        std::vector<double> tmp = M;
+        M.resize((this->rows) * cols);
+        for (size_t a = 0; a < this->rows; ++a) {
+            for (size_t b = 0; b < cols; ++b) {
+                M[a * cols + b] = tmp[a * cols + b];
+            }
+        }
     } else if (this->cols<cols) {
-        long a;
-        for (a=0; a<this->rows; a++)
-            this->M[a].resize(cols);
+        std::vector<double> tmp = M;
+        M.resize((this->rows) * cols);
+        for (size_t a = 0; a < this->rows; ++a) {
+            for (size_t b = 0; b < cols; ++b) {
+                if (b < this->cols)
+                    M[a * cols + b] = tmp[a * cols + b];
+            }
+        }
     }
-    this->rows=this->M.size(), this->cols=this->M[0].size();
+    this->cols=cols;
 }

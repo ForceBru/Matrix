@@ -128,7 +128,7 @@ public:
     Matrix& operator[](const long) const;
     
     explicit operator double() const {
-        if (rows == 1 && cols == 1) return M[0][0];
+        if (rows == 1 && cols == 1) return M[0];
         return 0;
     }
     
@@ -141,14 +141,13 @@ public:
     }
     
     bool operator==(const Matrix& mat) {
-        size_t a, b;
-
+        
         if (rows != mat.rows || cols != mat.cols)
             return false;
         
-        for (a = 0; a < rows; ++a)
-            for (b = 0; b < cols; ++b)
-                if (std::fabs(M[a][b] - mat.M[a][b]) > std::numeric_limits<double>::epsilon()*10)
+        for (size_t a = 0; a < rows; ++a)
+            for (size_t b = 0; b < cols; ++b)
+                if (std::fabs(M[a * cols + b] - mat.M[a * cols + b]) > std::numeric_limits<double>::epsilon()*10)
                     return false;
             
         return true;
@@ -164,16 +163,16 @@ public:
     
     
     friend std::ostream& operator<<(std::ostream& os, Matrix obj){
-        size_t a,b;
+            //size_t a,b;
         std::ios_base::fmtflags t=os.flags();
         if (obj.prettified)
             os << std::fixed << std::setprecision(3);
         else
             os << std::fixed << std::setprecision(std::numeric_limits<double>::digits10);
         
-        for (a = 0; a < obj.rows; ++a) {
-            for (b = 0; b < obj.cols; ++b) {
-                os << (obj.M)[a][b];
+        for (size_t a = 0; a < obj.rows; ++a) {
+            for (size_t b = 0; b < obj.cols; ++b) {
+                os << obj.M[a * (obj.cols) + b];
                 if (b != obj.cols-1) os << ' ';
             }
             if (obj.rows > 1)
@@ -191,7 +190,7 @@ private:
     size_t rows, cols;
     bool prettified;
         //'M' is a vector of vectors that holds all the values
-    std::vector< std::vector<double> > M;
+    std::vector<double> M;
 };
 
 
