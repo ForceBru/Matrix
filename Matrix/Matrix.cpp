@@ -17,6 +17,7 @@
 Matrix::Matrix() {
     this->rows = this->cols = 1;
     this->M.resize(1);
+    this->M.reserve(4);
     this->prettified=false;
 }
 
@@ -35,53 +36,67 @@ Matrix::Matrix(const std::vector< std::vector<double> >& data) {
     this->FromData(data);
 }
 
-Matrix::Matrix(std::string fname) {
+Matrix::Matrix(const std::string fname) {
     if (!this->FromFile(fname)) {
         this->rows = this->cols = 1;
         this->M.resize(1);
+        this->M.reserve(4);
         this->prettified=false;
     }
 }
 
     //transpose a matrix
 Matrix Matrix::T() {
+    
+    if (this->IsNum())
+        return *this;
+    
     Matrix tmp(cols, rows);
-    long a, b;
-    for (a = 0; a < cols; ++a) {
-        for (b = 0; b < rows; ++b)
+    
+    for (size_t a = 0; a < cols; ++a)
+        for (size_t b = 0; b < rows; ++b)
             tmp.M[a * rows + b] = this->M[b * cols + a];
-    }
+    
     return tmp;
 }
 
     //return identity matrix
 Matrix Matrix::Identity() {
+    
+    if (this->IsNum()) {
+        Matrix k(1,1);
+        k.Ones();
+        return k;
+    }
+    
     if (rows != cols)
         throw SizeException("Matrix must be square to have an identity matrix");
 
     Matrix k(rows,rows);
-    size_t a, b;
-    for (a = 0; a < rows; a++) {
-        for (b = 0; b < cols; b++)
-            k.M[a * cols + b] = (a==b)?1:0;
-    }
+
+    for (size_t a = 0; a < rows; a++)
+        for (size_t b = 0; b < cols; b++)
+            k.M[a * cols + b] = (a==b);
+    
     return k;
 }
 
     //exponential of a matrix (element-wise)
 Matrix exp(const Matrix& A){
-    long k, i;
+
     Matrix E(A.Rows(), A.Cols());
     
-    for (k = 0; k < A.Rows(); k++)
-        for (i = 0; i < A.Cols(); i++)
-            E.M[k * (A.Cols()) + i] = exp(A.M[k * (A.Cols()) + i]);
+    for (size_t a = 0; a < A.Rows(); a++)
+        for (size_t b = 0; b < A.Cols(); b++)
+            E.M[a * (A.Cols()) + b] = exp(A.M[a * (A.Cols()) + b]);
+    
     return E;
 }
 
 
     //raise a matrix to power of 2
 Matrix sqr(const Matrix& A) {
+    
     if (A.rows != A.cols)
         throw SizeException("Matrix must be square to be raised to power of 2");
     else
@@ -96,6 +111,7 @@ Matrix& Matrix::Prettify() {
 
     // generate a random number
 double Matrix::_Random(long min, long max) {
+    
 #if __cplusplus > 199711L
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -107,38 +123,48 @@ double Matrix::_Random(long min, long max) {
 #endif
 }
 
-    //fill a matrix with random numbers
+    // fill a matrix with a constant number
+void Matrix::FillWith(double num) {
+    if (num == 0) {
+        this->Zeros();
+        return;
+    } else if (num == 1.0) {
+        this->Ones();
+        return;
+    }
+    
+    for (size_t a = 0; a < rows; ++a)
+        for (size_t b = 0; b < cols; ++b)
+            M[a * cols + b] = num;
+}
+
+    // fill a matrix with random numbers
 void Matrix::Random(long min, long max) {
-    long a, b;
-    for (a = 0; a < rows; ++a)
-        for (b = 0; b < cols; ++b)
+    for (size_t a = 0; a < rows; ++a)
+        for (size_t b = 0; b < cols; ++b)
             M[a * cols + b] = _Random(min, max);
 }
 
 void Matrix::Zeros() {
-    long a, b;
-    for (a = 0; a < rows; ++a)
-        for (b = 0; b < cols; ++b)
+    for (size_t a = 0; a < rows; ++a)
+        for (size_t b = 0; b < cols; ++b)
             M[a * cols + b]=0.0;
 }
 
 void Matrix::Ones() {
-    long a, b;
-    for (a = 0; a < rows; ++a)
-        for (b = 0; b < cols; ++b)
+    for (size_t a = 0; a < rows; ++a)
+        for (size_t b = 0; b < cols; ++b)
             this->M[a * cols + b] = 1.0;
 }
 
 void Matrix::FromData(const std::vector< std::vector<double> >& data) {
     this->rows=data.size();
     this->cols=data[0].size();
-    this->M.clear();
     this->M.resize((this->rows)*(this->cols));
-    for (size_t a = 0; a < this->rows; ++a) {
-        for (size_t b = 0; b < this->cols; ++b) {
+    for (size_t a = 0; a < this->rows; ++a)
+        for (size_t b = 0; b < this->cols; ++b)
             this->M[a * (this->cols) + b]=data[a][b];
-        }
-    }
+
     this->prettified=false;
 }
 
@@ -150,7 +176,7 @@ void Matrix::FromData(const std::vector<double>& data) {
 }
 
     //fill a matrix with data from a file
-int Matrix::FromFile(std::string fname) {
+int Matrix::FromFile(const std::string fname) {
     std::ifstream f;
     f.open(fname.c_str());
     prettified=false;
@@ -182,31 +208,51 @@ int Matrix::FromFile(std::string fname) {
 }
 
 
-void Matrix::Reshape(long rows, long cols) {
-    if (this->rows==rows && this->cols==cols) return; //no need to do anything here
-    if ((this->rows > rows) || (this->rows<rows)) {
-        this->M.resize(rows * (this->cols));
+void Matrix::Reshape(size_t rows, size_t cols) {
+    if (!rows || !cols)
+        throw SizeException("Invalid shape");
+    
+    if (this->rows==rows && this->cols==cols) return; //nothing to do here
+    
+    std::vector<double>::iterator it;
+    
+    if (rows == 1 && cols == 1) {
+        this->M.resize(1);
+        goto done;
+    } else if (rows == 2 && cols == 2) {
+        this->M.resize(4);
+        goto done;
+    } else if (rows == 3 && cols == 3) {
+        this->M.resize(9);
+        goto done;
     }
+    
+        // The simplest case: just resize the array
+        // (either losing data either inserting zeros)
+    if (this->rows != rows)
+        this->M.resize(rows * (this->cols));
     
     this->rows=rows;
     
+    it = this->M.begin();
+    
+        // Now a bit trickier: it's time to deal with
+        // data that is located elsewhere in the array
     if (this->cols > cols) {
-        std::vector<double> tmp = M;
-        M.resize((this->rows) * cols);
-        for (size_t a = 0; a < this->rows; ++a) {
-            for (size_t b = 0; b < cols; ++b) {
-                M[a * cols + b] = tmp[a * cols + b];
-            }
+        for (size_t r = 0; r < this->rows; ++r) {
+            this->M.erase(it + cols, it + this->cols);
+            it += cols;
         }
-    } else if (this->cols<cols) {
-        std::vector<double> tmp = M;
-        M.resize((this->rows) * cols);
-        for (size_t a = 0; a < this->rows; ++a) {
-            for (size_t b = 0; b < cols; ++b) {
-                if (b < this->cols)
-                    M[a * cols + b] = tmp[a * cols + b];
-            }
+    } else if (this->cols < cols) {
+        for (size_t r = 0; r < this->rows; ++r) {
+            this->M.insert(it + this->cols, cols - this->cols, 0);
+            it += cols;
         }
     }
+    
     this->cols=cols;
+    
+done:
+    this->rows = rows, this->cols = cols;
+    return;
 }

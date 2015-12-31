@@ -15,7 +15,6 @@ int main(int argc, const char * argv[]) {
     
     Matrix::Init();
     
-    
     Tests::Test(); //perform some tests
     
     return 0;

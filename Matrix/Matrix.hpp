@@ -79,7 +79,7 @@ std::string to_string(const T& value)
 class Matrix {
 public:
     Matrix();
-    Matrix(std::string fname);
+    Matrix(const std::string fname);
     Matrix(long rows, long cols);
     Matrix(const std::vector<double>&);
     Matrix(const std::vector< std::vector<double> >&);
@@ -88,15 +88,16 @@ public:
     void Random(long min = 0, long max = 1);
     void Zeros();
     void Ones();
-    int FromFile(std::string fname);
+    void FillWith(double);
+    int FromFile(const std::string fname);
     void FromData(const std::vector<double>& data);
     void FromData(const std::vector< std::vector<double> >& data);
     
-    void Reshape(long rows, long cols);
+    void Reshape(size_t rows, size_t cols);
     
         // Get properties of a Matrix
-    long Rows() const { return this->rows; }
-    long Cols() const { return this->cols; }
+    size_t Rows() const { return this->rows; }
+    size_t Cols() const { return this->cols; }
     bool IsVect() const { if (rows==1) return true; return false; }
     bool IsCol() const { if (cols==1) return true; return false; }
     bool IsNum() const { if ((rows==1) && (cols==1)) return true; return false; }
@@ -186,10 +187,10 @@ public:
     
     
 private:
-    double _Random(long min = 0, long max = RAND_MAX);
+    double _Random(long min, long max);
     size_t rows, cols;
     bool prettified;
-        //'M' is a vector of vectors that holds all the values
+        //'M' is a vector that holds all the values
     std::vector<double> M;
 };
 
