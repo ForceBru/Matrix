@@ -11,11 +11,11 @@
 namespace Tests {
     
         //create some matrices of size (rows, columns)
-    Matrix a(3, 4), aHat, b(4, 2), c(3, 2);
+    Matrix<> a(3, 4), aHat, b(4, 2), c(3, 2);
     
 #define Stats cout << "\tTest " << Tests::tests.N+1 << ": " << Tests::tests.names[Tests::tests.N] << "\n\n";
     
-    Matrix sigmoid(Matrix& z){ return 1.0 / (1.0 + exp(-z)); }
+    Matrix<> sigmoid(Matrix<>& z){ return 1.0 / (1.0 + exp(-z)); }
     
     string S(int num) {
         ++tests.success;
@@ -194,7 +194,7 @@ namespace Tests {
     
     void _FromFile() {
         
-        Matrix a(2, 3), b(5, 3);
+        Matrix<> a(2, 3), b(5, 3);
         a.Random(), b.Random(1, 2);
         
         ofstream f("matrix_a.txt"), g("matrix_b.txt");
@@ -203,7 +203,7 @@ namespace Tests {
         
         f.close(), g.close();
         
-        Matrix C, D;
+        Matrix<> C, D;
         C.FromFile("matrix_a.txt"), D.FromFile("matrix_b.txt");
         
         if ((C==a) && (D==b))
@@ -226,6 +226,16 @@ namespace Tests {
             cout << "If this fails, it's OK as comparing doubles is pretty difficult" << endl;
         }
         
+    }
+    
+    void _types() {
+        vector<int>    s = {1,  2,  4,  5,  7,  8};
+        vector<double> t = {1., 2., 4., 5., 7., 8.};
+        
+        Matrix<int>    a(s);
+        Matrix<double> b(t);
+        
+        cout << a + b<< endl;
     }
     
     

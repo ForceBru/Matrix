@@ -19,9 +19,9 @@
 #include <vector>
 #include <sstream>
 #if __cplusplus > 199711L
-#include <random>
+#   include <random>
 #else
-#include <stdlib.h>
+#   include <stdlib.h>
 #endif
 #include <fstream>
 #include <limits>
@@ -30,6 +30,16 @@
 #include <functional>
 #include <cctype>
 #include <locale>
+
+template <typename datatype> class Matrix;
+
+template <typename datatype>
+Matrix<datatype> exp(const Matrix<datatype>&);
+template <typename datatype>
+Matrix<datatype> sqr(const Matrix<datatype>&);
+template <typename datatype>
+Matrix<datatype> operator/(const datatype d, const Matrix<datatype>& mat);
+
 
     // trim from start
 static inline std::string &ltrim(std::string &s) {
@@ -57,8 +67,20 @@ std::string to_string(const T& value)
     return oss.str();
 }
 
+enum {UNDEFINED, NONZERO, ZERO};
+
+static inline void CheckZero(size_t* zeros, double num) {
+    if (num == 0) {
+        if (*zeros == UNDEFINED)
+            *zeros = ZERO;
+    } else {
+        if (*zeros != NONZERO)
+            *zeros = NONZERO;
+    }
+}
+
 #if __cplusplus < 199711L
-#define to_string std::to_string
+#   define to_string std::to_string
 #endif
 
 
@@ -76,60 +98,75 @@ std::string to_string(const T& value)
 */
 
 
+template <typename datatype = double>
 class Matrix {
 public:
     Matrix();
     Matrix(const std::string fname);
-    Matrix(long rows, long cols);
-    Matrix(const std::vector<double>&);
-    Matrix(const std::vector< std::vector<double> >&);
+    Matrix(size_t rows, size_t cols);
+    Matrix(const std::vector<datatype>&);
+    Matrix(const std::vector< std::vector<datatype> >&);
     
         // Fill matrix with data
-    void Random(long min = 0, long max = 1);
-    void Zeros();
-    void Ones();
-    void FillWith(double);
-    int FromFile(const std::string fname);
-    void FromData(const std::vector<double>& data);
-    void FromData(const std::vector< std::vector<double> >& data);
+    Matrix<datatype>& Random(long min = 0, long max = 1);
+    Matrix& Zeros();
+    Matrix& Ones();
+    Matrix& FillWith(datatype);
+    Matrix& FromFile(const std::string fname);
+    Matrix& FromData(const std::vector<datatype>& data);
+    Matrix& FromData(const std::vector< std::vector<datatype> >& data);
     
     void Reshape(size_t rows, size_t cols);
     
         // Get properties of a Matrix
     size_t Rows() const { return this->rows; }
     size_t Cols() const { return this->cols; }
-    bool IsVect() const { if (rows==1) return true; return false; }
-    bool IsCol() const { if (cols==1) return true; return false; }
-    bool IsNum() const { if ((rows==1) && (cols==1)) return true; return false; }
-    bool IsSquare(unsigned n) const { if (rows==cols==n) return true; return false; }
+    bool IsVect() const {  return (rows==1); }
+    bool IsCol() const { return (cols==1); }
+    bool IsNum() const { return ((rows==1) && (cols==1)); }
+    bool IsSquare(unsigned n) const { return (rows == n && cols ==n); }
+    bool IsZero() const { return this->_isZero; }
     
         // Apply mathematical operations to a Matrix
-    Matrix T();
-    Matrix Transpose() { return this->T(); }
-    Matrix Identity();
-    Matrix Hadamard(const Matrix& right) const;
+    Matrix  T();
+    Matrix  Transpose() { return this->T(); }
+    Matrix  Identity();
+    Matrix  Hadamard(const Matrix& right) const;
+    Matrix& clear();
+    
     Matrix& Prettify();
 
-    friend Matrix exp(const Matrix&);
-    friend Matrix sqr(const Matrix&);
-    friend Matrix operator/(const double, const Matrix& );
+    friend Matrix exp <> (const Matrix&);
+    friend Matrix sqr <> (const Matrix&);
+    friend Matrix operator/ <> (const datatype, const Matrix<datatype>& );
     
     Matrix& operator= (const Matrix&);
-    Matrix  operator+ (const Matrix& right) const;
+    
+    template <typename argtype1, typename argtype2>
+    friend Matrix<argtype1> operator+ (const Matrix<argtype1>& left, const Matrix<argtype2>& right);
+    
     Matrix  operator+ (const double& right) const;
     Matrix& operator+=(const Matrix& right);
     Matrix  operator- ()                    const;
-    Matrix  operator- (const Matrix& right) const;
+    
+    template <typename argtype1, typename argtype2>
+    friend Matrix<argtype1>  operator- (const Matrix<argtype1>& left, const Matrix<argtype2>& right);
+    
+    Matrix  operator- (const double& right) const;
     Matrix& operator-=(const Matrix& right);
     Matrix  operator* (const Matrix& right) const;
-    Matrix  operator* (const double& right) const;
-    Matrix  operator/ (const double& right) const;
-    Matrix& operator/=(const double& right);
+    Matrix  operator* (const datatype& right) const;
+    Matrix  operator/ (const datatype& right) const;
+    Matrix& operator/=(const datatype& right);
     
-    Matrix& operator[](const long) const;
+    Matrix& operator[](const size_t) const;
+    
+    bool operator! () {
+        return this->IsZero();
+    }
     
     explicit operator double() const {
-        if (rows == 1 && cols == 1) return M[0];
+        if (rows == 1 && cols == 1) return (double)M[0];
         return 0;
     }
     
@@ -146,9 +183,10 @@ public:
         if (rows != mat.rows || cols != mat.cols)
             return false;
         
+        
         for (size_t a = 0; a < rows; ++a)
             for (size_t b = 0; b < cols; ++b)
-                if (std::fabs(M[a * cols + b] - mat.M[a * cols + b]) > std::numeric_limits<double>::epsilon()*10)
+                if (std::fabs(M[a * cols + b] - mat.M[a * cols + b]) > std::numeric_limits<datatype>::epsilon()*10)
                     return false;
             
         return true;
@@ -189,26 +227,30 @@ public:
 private:
     double _Random(long min, long max);
     size_t rows, cols;
-    bool prettified;
+    bool prettified, _isZero;
         //'M' is a vector that holds all the values
-    std::vector<double> M;
+    std::vector<datatype> M;
 };
 
 
     //number + matrix
-inline Matrix operator+(double left, const Matrix& right) {
+template <typename datatype>
+inline Matrix<datatype> operator+(double left, const Matrix<datatype>& right) {
     return right + left;
 }
 
     //number - matrix
-inline Matrix operator-(double left, const Matrix& right) {
+template <typename datatype>
+inline Matrix<datatype> operator-(double left, const Matrix<datatype>& right) {
     return (-right) + left;
 }
 
     //number * matrix
-inline Matrix operator*(double left, const Matrix& right) {
+template <typename datatype>
+inline Matrix<datatype> operator*(double left, const Matrix<datatype>& right) {
     return right * left;
 }
+
 
     // -------------- EXCEPTIONS --------------
 
@@ -241,5 +283,9 @@ public:
 private:
     std::string msg;
 };
+
+#include "Matrix.hxx"
+#include "operators.hxx"
+
 
 #endif /* Matrix_hpp */

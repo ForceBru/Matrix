@@ -32,7 +32,7 @@ namespace Tests {
         string names[number_of_tests];
     } tests={0,0,0,0,};
 
-    Matrix sigmoid(Matrix& z);
+    Matrix<double> sigmoid(Matrix<double>& z);
     string S(int num);
     string F(int num);
     void Test(void);
