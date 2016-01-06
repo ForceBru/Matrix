@@ -15,7 +15,7 @@ install:
   
 script: 
   - cd Matrix_test
-  - $CXX -std=c++0x -L ../Matrix -I ../Matrix main.cpp Tests.cpp -o Test -lMatrix
+  - $CXX -std=c++0x -I ../Matrix main.cpp Tests.cpp -o Test
 
 compiler:
     - gcc 
