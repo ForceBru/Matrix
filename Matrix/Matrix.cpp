@@ -355,7 +355,10 @@ bool Matrix::initOpenCL(std::string add_src, std::string sub_src, std::string mu
     sub_file.open(sub_src);
     mult_file.open(mult_src);
     
-    if ((! add_file.good()) || (! mult_file.good()) || (! sub_file.good())) return 0;
+    if ((! add_file.good()) || (! mult_file.good()) || (! sub_file.good())) {
+        std::cerr << "[!] Error opening source files!" << std::endl;
+       return 0;
+    }
     
     std::string   add_source(std::istreambuf_iterator<char>(add_file),(std::istreambuf_iterator<char>()));
     std::string   sub_source(std::istreambuf_iterator<char>(sub_file),(std::istreambuf_iterator<char>()));
@@ -400,7 +403,7 @@ bool Matrix::initOpenCL(std::string add_src, std::string sub_src, std::string mu
     return 1;
 }
 #else
-constexpr bool Matrix::initOpenCL() {
+constexpr bool Matrix::initOpenCL(std::string a="", std::string b="", std::string c="") {
     return 0;
 }
 #endif

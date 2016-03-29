@@ -36,7 +36,7 @@ namespace Tests {
     struct {
         unsigned tests[number_of_tests], N, failed, success;
         string names[number_of_tests];
-    } tests={0,0,0,0,};
+    } tests={{0}, 0, 0, 0, {""}};
 
     Matrix sigmoid(Matrix& z);
     string S(int num);

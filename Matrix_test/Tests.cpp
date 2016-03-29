@@ -213,7 +213,7 @@ namespace Tests {
             cout << a << "\n" << C << "\n" << b << "\n" << D << "\n";
             cout << "\n\n" << a.Rows() << ' ' << a.Cols() << " vs " << C.Rows() << ' ' << C.Cols() << endl;
             cout << b.Rows() << ' ' << b.Cols() << " vs " << D.Rows() << ' ' << D.Cols() << endl;
-            long i,j;
+            size_t i,j;
             for (i = 0; i < a.Rows();++i)
                 for (j = 0; j < a.Cols();++j)
                     if (a[i][j] != C[i][j]) cout << "\nDifference: " << a[i][j] << " != " << C[i][j] << endl;
