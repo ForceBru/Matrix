@@ -3,7 +3,7 @@ language: cpp
 addons:
   apt:
     sources:
-      - llvm-toolchain-precise
+      - llvm-toolchain-precise-3.8
       - ubuntu-toolchain-r-test
     packages:
       - clang-3.8
@@ -17,21 +17,21 @@ script:
   - cd Matrix
   
   - if [[ "$TRAVIS_OS_NAME" = "linux" ]]; then 
-      libtool --tag=CXX --mode=compile $CXX -std=c++0x -g -O -c Matrix.cpp; 
+      libtool --tag=CXX --mode=compile $CXX -std=c++0x -g -I . -O -c Matrix.cpp; 
     else  
-      $CXX -c Matrix.cpp -o Matrix.o;
+      $CXX -c Matrix.cpp  -I . -o Matrix.o;
     fi
     
   - if [[ "$TRAVIS_OS_NAME" = "linux" ]]; then 
-      libtool --tag=CXX --mode=compile $CXX -std=c++0x -g -O -c operators.cpp; 
+      libtool --tag=CXX --mode=compile $CXX -std=c++0x -g -I . -O -c operators.cpp; 
     else
-      $CXX -c operators.cpp -o operators.o;
+      $CXX -c operators.cpp  -I . -o operators.o;
     fi
     
   - if [[ "$TRAVIS_OS_NAME" = "linux" ]]; then 
-      libtool --tag=CXX --mode=compile $CXX -std=c++0x -g -O -c util_ocl.cpp; 
+      libtool --tag=CXX --mode=compile $CXX -std=c++0x -g -I . -O -c util_ocl.cpp; 
     else
-      $CXX -c util_ocl.cpp -o util_ocl.o;
+      $CXX -c util_ocl.cpp  -I . -o util_ocl.o;
     fi
     
   - if [[ "$TRAVIS_OS_NAME" = "linux" ]]; then 
@@ -41,11 +41,11 @@ script:
     fi
     
   - cd ../Matrix_test
-  - $CXX -std=c++0x -L ../Matrix -I ../Matrix main.cpp Tests.cpp -o Test -lMatrix
+  - $CXX -std=c++0x -L ../Matrix -I ../Matrix main.cpp -I . Tests.cpp -o Test -lMatrix
   
 
 compiler:
-    - gcc 
+    - gcc
     - clang
     
 os:
