@@ -31,14 +31,9 @@
 #include <cctype>
 #include <locale>
 
-template <typename datatype> class Matrix;
-
-template <typename datatype>
-Matrix<datatype> exp(const Matrix<datatype>&);
-template <typename datatype>
-Matrix<datatype> sqr(const Matrix<datatype>&);
-template <typename datatype>
-Matrix<datatype> operator/(const datatype d, const Matrix<datatype>& mat);
+#ifdef HAVE_OPENCL
+#include "cl.hpp"
+#endif
 
 
     // trim from start
@@ -98,23 +93,29 @@ static inline void CheckZero(size_t* zeros, double num) {
 */
 
 
-template <typename datatype = double>
 class Matrix {
 public:
+#ifdef HAVE_OPENCL
+    static bool initOpenCL(std::string add_src, std::string sub_src, std::string mult_src);
+#else
+    static constexpr bool initOpenCL(std::string a="", std::string b="", std::string c="");
+#endif
+    
     Matrix();
     Matrix(const std::string fname);
-    Matrix(size_t rows, size_t cols);
-    Matrix(const std::vector<datatype>&);
-    Matrix(const std::vector< std::vector<datatype> >&);
+    Matrix(const size_t rows, const size_t cols);
+
+    Matrix(const std::vector<double>&);
+    Matrix(const std::vector< std::vector<double> >&);
     
         // Fill matrix with data
-    Matrix<datatype>& Random(long min = 0, long max = 1);
+    Matrix& Random(const size_t min = 0, const size_t max = 1);
     Matrix& Zeros();
     Matrix& Ones();
-    Matrix& FillWith(datatype);
+    Matrix& FillWith(const double);
     Matrix& FromFile(const std::string fname);
-    Matrix& FromData(const std::vector<datatype>& data);
-    Matrix& FromData(const std::vector< std::vector<datatype> >& data);
+    Matrix& FromData(const std::vector<double>& data);
+    Matrix& FromData(const std::vector< std::vector<double> >& data);
     
     void Reshape(size_t rows, size_t cols);
     
@@ -122,8 +123,8 @@ public:
     size_t Rows() const { return this->rows; }
     size_t Cols() const { return this->cols; }
     bool IsVect() const {  return (rows==1); }
-    bool IsCol() const { return (cols==1); }
-    bool IsNum() const { return ((rows==1) && (cols==1)); }
+    bool IsCol()  const { return (cols==1); }
+    bool IsNum()  const { return ((rows==1) && (cols==1)); }
     bool IsSquare(unsigned n) const { return (rows == n && cols ==n); }
     bool IsZero() const { return this->_isZero; }
     
@@ -136,28 +137,27 @@ public:
     
     Matrix& Prettify();
 
-    friend Matrix exp <> (const Matrix&);
-    friend Matrix sqr <> (const Matrix&);
-    friend Matrix operator/ <> (const datatype, const Matrix<datatype>& );
+    friend Matrix exp (const Matrix&);
+    friend Matrix sqr (const Matrix&);
+    friend Matrix operator/ (const double, const Matrix& );
     
     Matrix& operator= (const Matrix&);
     
-    template <typename argtype1, typename argtype2>
-    friend Matrix<argtype1> operator+ (const Matrix<argtype1>& left, const Matrix<argtype2>& right);
+    friend Matrix operator+ (const Matrix& left, const Matrix& right);
     
     Matrix  operator+ (const double& right) const;
     Matrix& operator+=(const Matrix& right);
     Matrix  operator- ()                    const;
     
-    template <typename argtype1, typename argtype2>
-    friend Matrix<argtype1>  operator- (const Matrix<argtype1>& left, const Matrix<argtype2>& right);
+    
+    friend Matrix  operator- (const Matrix& left, const Matrix& right);
     
     Matrix  operator- (const double& right) const;
     Matrix& operator-=(const Matrix& right);
     Matrix  operator* (const Matrix& right) const;
-    Matrix  operator* (const datatype& right) const;
-    Matrix  operator/ (const datatype& right) const;
-    Matrix& operator/=(const datatype& right);
+    Matrix  operator* (const double& right) const;
+    Matrix  operator/ (const double& right) const;
+    Matrix& operator/=(const double& right);
     
     Matrix& operator[](const size_t) const;
     
@@ -186,7 +186,7 @@ public:
         
         for (size_t a = 0; a < rows; ++a)
             for (size_t b = 0; b < cols; ++b)
-                if (std::fabs(M[a * cols + b] - mat.M[a * cols + b]) > std::numeric_limits<datatype>::epsilon()*10)
+                if (std::fabs(M[a * cols + b] - mat.M[a * cols + b]) > std::numeric_limits<double>::epsilon()*10)
                     return false;
             
         return true;
@@ -202,7 +202,6 @@ public:
     
     
     friend std::ostream& operator<<(std::ostream& os, Matrix obj){
-            //size_t a,b;
         std::ios_base::fmtflags t=os.flags();
         if (obj.prettified)
             os << std::fixed << std::setprecision(3);
@@ -229,25 +228,29 @@ private:
     size_t rows, cols;
     bool prettified, _isZero;
         //'M' is a vector that holds all the values
-    std::vector<datatype> M;
+    std::vector<double> M;
+    
+#ifdef HAVE_OPENCL
+    static bool                      oclEnabled;
+    static cl::Context               context;
+    static cl::CommandQueue          queue;
+    static cl::Program               add, sub, mult;
+#endif
 };
 
 
     //number + matrix
-template <typename datatype>
-inline Matrix<datatype> operator+(double left, const Matrix<datatype>& right) {
+inline Matrix operator+(double left, const Matrix& right) {
     return right + left;
 }
 
     //number - matrix
-template <typename datatype>
-inline Matrix<datatype> operator-(double left, const Matrix<datatype>& right) {
+inline Matrix operator-(double left, const Matrix& right) {
     return (-right) + left;
 }
 
     //number * matrix
-template <typename datatype>
-inline Matrix<datatype> operator*(double left, const Matrix<datatype>& right) {
+inline Matrix operator*(double left, const Matrix& right) {
     return right * left;
 }
 
@@ -283,9 +286,6 @@ public:
 private:
     std::string msg;
 };
-
-#include "Matrix.hxx"
-#include "operators.hxx"
 
 
 #endif /* Matrix_hpp */

@@ -9,34 +9,42 @@
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
+#include <fstream>
+#include <string>
+#include <iostream>
 
-//#include "Matrix.hpp"
+#include "Matrix.hpp"
+#include "util_ocl.hpp"
+
+#ifdef HAVE_OPENCL
+bool   Matrix::oclEnabled = false;
+cl::CommandQueue Matrix::queue;
+cl::Context Matrix::context;
+cl::Program Matrix::add, Matrix::sub, Matrix::mult;
+#endif
 
     //default constructor constructs an ordinary number
-template <typename datatype>
-Matrix<datatype>::Matrix(): rows(1), cols(1), _isZero(true), prettified(false) {
+Matrix::Matrix(): rows(1), cols(1), _isZero(1), prettified(0) {
     this->M.resize(1);
     this->M.reserve(4);
 }
 
     //construct a matrix of size rows x cols
-template <typename datatype>
-Matrix<datatype>::Matrix(size_t rows, size_t cols): rows(rows), cols(cols), _isZero(true), prettified(false) {
+Matrix::Matrix(size_t rows, size_t cols): rows(rows), cols(cols), _isZero(1), prettified(0) {
     this->M.resize(rows * cols);
 }
 
-template <typename datatype>
-Matrix<datatype>::Matrix(const std::vector<datatype>& data) {
+Matrix::Matrix(const std::vector<double>& data) {
     this->FromData(data);
 }
 
-template <typename datatype>
-Matrix<datatype>::Matrix(const std::vector< std::vector<datatype> >& data) {
+
+Matrix::Matrix(const std::vector< std::vector<double> >& data) {
     this->FromData(data);
 }
 
-template <typename datatype>
-Matrix<datatype>::Matrix(const std::string fname) {
+
+Matrix::Matrix(const std::string fname) {
     if (! this->FromFile(fname)) {
         this->rows = this->cols = 1;
         this->M.resize(1);
@@ -47,13 +55,12 @@ Matrix<datatype>::Matrix(const std::string fname) {
 }
 
     //transpose a matrix
-template <typename datatype>
-Matrix<datatype> Matrix<datatype>::T() {
+Matrix Matrix::T() {
     
     if (this->IsNum())
         return *this;
     
-    Matrix<datatype> tmp(cols, rows);
+    Matrix tmp(cols, rows);
     
     for (size_t a = 0; a < cols; ++a)
         for (size_t b = 0; b < rows; ++b)
@@ -63,11 +70,10 @@ Matrix<datatype> Matrix<datatype>::T() {
 }
 
     //return identity matrix
-template <typename datatype>
-Matrix<datatype> Matrix<datatype>::Identity() {
+Matrix Matrix::Identity() {
     
     if (this->IsNum()) {
-        Matrix<datatype> k(1,1);
+        Matrix k(1,1);
         k.Ones();
         return k;
     }
@@ -75,7 +81,7 @@ Matrix<datatype> Matrix<datatype>::Identity() {
     if (rows != cols)
         throw SizeException("Matrix must be square to have an identity matrix");
 
-    Matrix<datatype> k(rows,rows);
+    Matrix k(rows,rows);
 
     for (size_t a = 0; a < rows; a++)
         for (size_t b = 0; b < cols; b++)
@@ -87,11 +93,10 @@ Matrix<datatype> Matrix<datatype>::Identity() {
 }
 
     //exponential of a matrix (element-wise)
-template <typename datatype>
-Matrix<datatype> exp(const Matrix<datatype>& A){
+Matrix exp(const Matrix& A){
 
     size_t zeros = UNDEFINED;
-    Matrix<datatype> E(A.Rows(), A.Cols());
+    Matrix E(A.Rows(), A.Cols());
     
     for (size_t a = 0; a < A.Rows(); a++)
         for (size_t b = 0; b < A.Cols(); b++) {
@@ -107,8 +112,7 @@ Matrix<datatype> exp(const Matrix<datatype>& A){
 
 
     //raise a matrix to power of 2
-template <typename datatype>
-Matrix<datatype> sqr(const Matrix<datatype>& A) {
+Matrix sqr(const Matrix& A) {
     
     if (A.rows != A.cols)
         throw SizeException("Matrix must be square to be raised to power of 2");
@@ -116,16 +120,15 @@ Matrix<datatype> sqr(const Matrix<datatype>& A) {
         return A * A;
 }
 
-template <typename datatype>
-Matrix<datatype>& Matrix<datatype>::Prettify() {
+
+Matrix& Matrix::Prettify() {
     this->prettified=true;
     return (*this);
 }
 
 
     // generate a random number
-template <typename datatype>
-double Matrix<datatype>::_Random(long min, long max) {
+double Matrix::_Random(long min, long max) {
     
 #if __cplusplus > 199711L
     std::random_device rd;
@@ -139,8 +142,7 @@ double Matrix<datatype>::_Random(long min, long max) {
 }
 
     // fill a matrix with a constant number
-template <typename datatype>
-Matrix<datatype>& Matrix<datatype>::FillWith(datatype num) {
+Matrix& Matrix::FillWith(double num) {
     if (num == 0) {
         this->Zeros();
         return *this;
@@ -160,13 +162,12 @@ Matrix<datatype>& Matrix<datatype>::FillWith(datatype num) {
 
 
     // fill a matrix with random numbers
-template <typename datatype>
-Matrix<datatype>& Matrix<datatype>::Random(long min, long max) {
+Matrix& Matrix::Random(const size_t min, const size_t max) {
     size_t zeros = UNDEFINED;
     this->_isZero = false;
     for (size_t a = 0; a < rows; ++a)
         for (size_t b = 0; b < cols; ++b) {
-            M[a * cols + b] = static_cast<datatype>(_Random(min, max));
+            M[a * cols + b] = double(_Random(min, max));
             CheckZero(&zeros, M[a * cols + b]);
         }
     
@@ -176,28 +177,27 @@ Matrix<datatype>& Matrix<datatype>::Random(long min, long max) {
     return *this;
 }
 
-template <typename datatype>
-Matrix<datatype>& Matrix<datatype>::Zeros() {
+Matrix& Matrix::Zeros() {
     for (size_t a = 0; a < rows; ++a)
         for (size_t b = 0; b < cols; ++b)
-            M[a * cols + b] = static_cast<datatype>(0.0);
+            M[a * cols + b] = double(0.0);
     
     this->_isZero = true;
     return *this;
 }
 
-template <typename datatype>
-Matrix<datatype>& Matrix<datatype>::Ones() {
+
+Matrix& Matrix::Ones() {
     for (size_t a = 0; a < rows; ++a)
         for (size_t b = 0; b < cols; ++b)
-            this->M[a * cols + b] = static_cast<datatype>(1.0);
+            this->M[a * cols + b] = double(1.0);
     
     this->_isZero = false;
     return *this;
 }
 
-template <typename datatype>
-Matrix<datatype>& Matrix<datatype>::FromData(const std::vector< std::vector<datatype> >& data) {
+
+Matrix& Matrix::FromData(const std::vector< std::vector<double> >& data) {
     this->_isZero = false;
     this->rows = data.size();
     this->cols = data[0].size();
@@ -222,8 +222,8 @@ Matrix<datatype>& Matrix<datatype>::FromData(const std::vector< std::vector<data
     return *this;
 }
 
-template <typename datatype>
-Matrix<datatype>& Matrix<datatype>::FromData(const std::vector<datatype>& data) {
+
+Matrix& Matrix::FromData(const std::vector<double>& data) {
     this->rows = 1;
     this->cols = data.size();
     this->_isZero = false;
@@ -237,11 +237,10 @@ Matrix<datatype>& Matrix<datatype>::FromData(const std::vector<datatype>& data) 
 }
 
     //fill a matrix with data from a file
-template <typename datatype>
-Matrix<datatype>& Matrix<datatype>::FromFile(const std::string fname) {
+Matrix& Matrix::FromFile(const std::string fname) {
     std::ifstream f;
     f.open(fname.c_str());
-//    prettified = false, _isZero = true;
+
     if (! f.is_open())
         throw FileException();
     std::string line;
@@ -276,8 +275,8 @@ Matrix<datatype>& Matrix<datatype>::FromFile(const std::string fname) {
     return *this;
 }
 
-template <typename datatype>
-void Matrix<datatype>::Reshape(size_t rows, size_t cols) {
+
+void Matrix::Reshape(size_t rows, size_t cols) {
     if (!rows || !cols)
         throw SizeException("Invalid shape");
     
@@ -326,10 +325,90 @@ done:
     return;
 }
 
-template <typename datatype>
-Matrix<datatype>& Matrix<datatype>::clear() {
+#ifdef HAVE_OPENCL
+bool Matrix::initOpenCL(std::string add_src, std::string sub_src, std::string mult_src) {
+    cl_int err = CL_SUCCESS;
+    std::vector<cl::Platform> platforms;
+    std::vector<cl::Device>   devices;
+    
+    cl::Platform::get(&platforms);
+    
+    if (platforms.empty()) return 0;
+    
+    for (auto plat: platforms) {
+        std::vector<cl::Device> GPUS;
+        plat.getDevices(CL_DEVICE_TYPE_GPU, &GPUS);
+        devices.insert(devices.end(), GPUS.begin(), GPUS.end());
+    }
+    
+    if (devices.empty()) return 0;
+    
+    Matrix::context = cl::Context(devices, NULL, NULL, NULL, &err);
+    if (check_cl_err(err)) return 0;
+    
+    Matrix::queue   = cl::CommandQueue(Matrix::context, 0, &err);
+    if (check_cl_err(err)) return 0;
+    
+    std::ifstream add_file, sub_file, mult_file;
+    
+    add_file.open(add_src);
+    sub_file.open(sub_src);
+    mult_file.open(mult_src);
+    
+    if ((! add_file.good()) || (! mult_file.good()) || (! sub_file.good())) return 0;
+    
+    std::string   add_source(std::istreambuf_iterator<char>(add_file),(std::istreambuf_iterator<char>()));
+    std::string   sub_source(std::istreambuf_iterator<char>(sub_file),(std::istreambuf_iterator<char>()));
+    std::string   mult_source(std::istreambuf_iterator<char>(mult_file),(std::istreambuf_iterator<char>()));
+    
+    add_file.close(), sub_file.close(), mult_file.close();
+    
+    
+    cl::Program::Sources _add = cl::Program::Sources(1, std::make_pair(add_source.c_str(), add_source.length()+1));
+    cl::Program::Sources _sub = cl::Program::Sources(1, std::make_pair(sub_source.c_str(), sub_source.length()+1));
+    cl::Program::Sources _mult = cl::Program::Sources(1, std::make_pair(mult_source.c_str(), mult_source.length()+1));
+    
+    
+    Matrix::add = cl::Program(Matrix::context, _add);
+    Matrix::sub = cl::Program(Matrix::context, _sub);
+    Matrix::mult = cl::Program(Matrix::context, _mult);
+    
+    
+    err = Matrix::add.build();
+    
+    if (check_cl_err(err)) {
+        std::cerr << "[!] Error compiling kernel for addition!" << std::endl;
+        return 0;
+    }
+    
+    err = Matrix::sub.build();
+    
+    if (check_cl_err(err)) {
+        std::cerr << "[!] Error compiling kernel for substraction!" << std::endl;
+        return 0;
+    }
+    
+    err = Matrix::mult.build();
+    
+    if (check_cl_err(err)) {
+        std::cerr << "[!] Error compiling kernel for multiplication!" << std::endl;
+        return 0;
+    }
+    
+    Matrix::oclEnabled = true;
+    
+    return 1;
+}
+#else
+constexpr bool Matrix::initOpenCL() {
+    return 0;
+}
+#endif
+
+
+Matrix& Matrix::clear() {
     this->M.clear();
-    this->M.push_back((datatype)0);
+    this->M.push_back((double)0);
     this->rows = this->cols = 1;
     
     this->_isZero = true;

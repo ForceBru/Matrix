@@ -10,6 +10,7 @@
 #define Tests_h
 
 #include <exception>
+#include <string>
 #include "Matrix.hpp"
 
 #if __cplusplus > 199711L
@@ -21,9 +22,14 @@
 using namespace std;
 
 #define TIMES 2000000UL
+#define OCL_TIMES 200UL
 
 namespace Tests {
+#ifdef HAVE_OPENCL
+#define number_of_tests 15
+#else
 #define number_of_tests 13
+#endif
     
     double Time();
 
@@ -32,7 +38,7 @@ namespace Tests {
         string names[number_of_tests];
     } tests={0,0,0,0,};
 
-    Matrix<double> sigmoid(Matrix<double>& z);
+    Matrix sigmoid(Matrix& z);
     string S(int num);
     string F(int num);
     void Test(void);

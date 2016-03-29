@@ -11,11 +11,11 @@
 namespace Tests {
     
         //create some matrices of size (rows, columns)
-    Matrix<> a(3, 4), aHat, b(4, 2), c(3, 2);
+    Matrix a(3, 4), aHat, b(4, 2), c(3, 2);
     
 #define Stats cout << "\tTest " << Tests::tests.N+1 << ": " << Tests::tests.names[Tests::tests.N] << "\n\n";
     
-    Matrix<> sigmoid(Matrix<>& z){ return 1.0 / (1.0 + exp(-z)); }
+    Matrix sigmoid(Matrix& z){ return 1.0 / (1.0 + exp(-z)); }
     
     string S(int num) {
         ++tests.success;
@@ -194,7 +194,7 @@ namespace Tests {
     
     void _FromFile() {
         
-        Matrix<> a(2, 3), b(5, 3);
+        Matrix a(2, 3), b(5, 3);
         a.Random(), b.Random(1, 2);
         
         ofstream f("matrix_a.txt"), g("matrix_b.txt");
@@ -203,7 +203,7 @@ namespace Tests {
         
         f.close(), g.close();
         
-        Matrix<> C, D;
+        Matrix C, D;
         C.FromFile("matrix_a.txt"), D.FromFile("matrix_b.txt");
         
         if ((C==a) && (D==b))
@@ -228,18 +228,77 @@ namespace Tests {
         
     }
     
-    void _types() {
-        vector<int>    s = {1,  2,  4,  5,  7,  8};
-        vector<double> t = {1., 2., 4., 5., 7., 8.};
-        
-        Matrix<int>    a(s);
-        Matrix<double> b(t);
-        
-        cout << a + b<< endl;
+#ifdef HAVE_OPENCL
+    void _TestOpenCLMult() {
+        try {
+            Matrix _a(80, 90), _b(90, 60), _c(80, 60);
+                //multiply two matrices (of appropriate size!)
+            cout << "Multiplying big matrices ( (80x90) X (90x60) ) " << OCL_TIMES << " times with OpenCL, please wait...\n" << endl;
+            size_t r;
+            
+            _a.Random(), _b.Random();
+            
+                //cout << "\nA:\n" << _a << "\nB:\n" << _b << endl;
+            
+            double start = Time();
+            
+            for (r = 0; r < OCL_TIMES; ++r) {
+                _c = _a * _b;
+            }
+            
+            _c.Reshape(7, 6);
+            cout << _c.Prettify() << endl;
+            
+            cout << "Multiplied two big matrices " << OCL_TIMES << " times in " << Time() - start << " seconds." << endl;
+            cout << Tests::S(Tests::tests.N++) << endl;
+        } catch (const SizeException& e){
+                //exception is thrown if the matrices are not of the appropriate size
+            cout << Tests::F(Tests::tests.N++) << e.what() << endl;
+        }
     }
+    
+    void _TestOpenCLAddSub() {
+        try {
+            Matrix _a(80, 90), _b(80, 90), _c(80, 90);
+                //add two matrices (of appropriate size!)
+            cout << "Adding and substracting big matrices ( (80x90) + (80x90) ) " << OCL_TIMES << " times with OpenCL, please wait...\n" << endl;
+            size_t r;
+            
+            _a.Random(), _b.Random();
+            
+            double start = Time();
+            
+            for (r = 0; r < OCL_TIMES; ++r) {
+                _c = _a + _b;
+                if ((_c -= _b) != _a) {
+                    cout << Tests::F(Tests::tests.N++) << endl;
+                    return;
+                }
+            }
+            
+            _c.Reshape(7, 6);
+            cout << _c.Prettify() << endl;
+            
+            cout << "Added two big matrices " << OCL_TIMES << " times in " << Time() - start << " seconds." << endl;
+            cout << Tests::S(Tests::tests.N++) << endl;
+        } catch (const SizeException& e){
+                //exception is thrown if the matrices are not of the appropriate size
+            cout << Tests::F(Tests::tests.N++) << e.what() << endl;
+        }
+    }
+    
+#endif
     
     
 void Test(void) {
+    
+#ifdef HAVE_OPENCL
+    std::string path = "/Users/ForceBru/Desktop/Matrix/";
+    bool ret = Matrix::initOpenCL(path + "add.cl", path + "sub.cl", path + "mult.cl");
+    
+    if (! ret) cout << "Failed to initialize OpenCL!" << endl;
+    else cout << "OpenCL initialized successfully!" << endl;
+#endif
     
     Tests::tests.names[0]="Filling and assigning";
     Tests::tests.names[1]="Outputting";
@@ -254,6 +313,10 @@ void Test(void) {
     Tests::tests.names[10]=Tests::tests.names[9];
     Tests::tests.names[11]="Vectorization";
     Tests::tests.names[12]="Filling from file";
+#ifdef HAVE_OPENCL
+    Tests::tests.names[13]="Testing OpenCL multiplication";
+    Tests::tests.names[14]="Testing OpenCL addition";
+#endif
     
     
     cout << "\n\t\tRUNNING " << number_of_tests << " TESTS...\n" << endl;
@@ -271,6 +334,11 @@ void Test(void) {
     Stats; _GetNum();
     Stats; _sigmoid();
     Stats; _FromFile();
+#ifdef HAVE_OPENCL
+    Stats; _TestOpenCLMult();
+    Stats; _TestOpenCLAddSub();
+#endif
+    
     
     
     cout << "\n\n\tSUMMARY:" << endl;
