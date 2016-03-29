@@ -14,3 +14,7 @@
 *.xcsettings
 
 *.xcbkptlist
+
+cl_old.hpp
+
+cl.hpp
