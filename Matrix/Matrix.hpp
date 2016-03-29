@@ -97,8 +97,6 @@ class Matrix {
 public:
 #ifdef HAVE_OPENCL
     static bool initOpenCL(std::string add_src, std::string sub_src, std::string mult_src);
-#else
-    static constexpr bool initOpenCL(std::string a="", std::string b="", std::string c="");
 #endif
     
     Matrix();

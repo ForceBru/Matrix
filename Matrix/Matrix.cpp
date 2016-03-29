@@ -402,10 +402,6 @@ bool Matrix::initOpenCL(std::string add_src, std::string sub_src, std::string mu
     
     return 1;
 }
-#else
-constexpr bool Matrix::initOpenCL(std::string a, std::string b, std::string c) {
-    return 0;
-}
 #endif
 
 
