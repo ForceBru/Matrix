@@ -31,7 +31,7 @@ script:
   - if [[ "$TRAVIS_OS_NAME" = "linux" ]]; then 
       libtool --tag=CXX --mode=compile $CXX -std=c++0x -g -O -c util_ocl.cpp; 
     else
-      $CXX -c outil_ocl.cpp -o util_ocl.o;
+      $CXX -c util_ocl.cpp -o util_ocl.o;
     fi
     
   - if [[ "$TRAVIS_OS_NAME" = "linux" ]]; then 
