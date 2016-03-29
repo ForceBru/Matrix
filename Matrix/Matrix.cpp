@@ -327,6 +327,7 @@ done:
 
 #ifdef HAVE_OPENCL
 bool Matrix::initOpenCL(std::string add_src, std::string sub_src, std::string mult_src) {
+    Matrix::oclEnabled = false;
     cl_int err = CL_SUCCESS;
     std::vector<cl::Platform> platforms;
     std::vector<cl::Device>   devices;

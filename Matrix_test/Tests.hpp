@@ -22,7 +22,7 @@
 using namespace std;
 
 #define TIMES 2000000UL
-#define OCL_TIMES 200UL
+#define OCL_TIMES 10000
 
 namespace Tests {
 #ifdef HAVE_OPENCL

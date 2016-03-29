@@ -32,7 +32,7 @@ Matrix operator+ (const Matrix& left, const Matrix& right) {
     Matrix ret = left;
     
 #ifdef HAVE_OPENCL
-    if (Matrix::oclEnabled && (left.rows < 10) && (left.cols < 10)) {
+    if (! Matrix::oclEnabled || (left.rows < 100) && (left.cols < 100)) {
 #endif
         
     for (size_t a = 0; a < left.rows; ++a)
@@ -115,7 +115,7 @@ Matrix& Matrix::operator+=(const Matrix& right) {
 	throw SizeException("Size mismatch while adding matrices!");
     
 #ifdef HAVE_OPENCL
-    if (Matrix::oclEnabled && ((rows < 10) || (cols < 10))) {
+    if (! Matrix::oclEnabled || ((rows < 100) || (cols < 100))) {
 #endif
     
     for (size_t a = 0; a < rows; ++a)
@@ -159,7 +159,7 @@ Matrix  operator- (const Matrix& left, const Matrix& right){
     Matrix ret(left.rows, left.cols);
     
 #ifdef HAVE_OPENCL
-    if (Matrix::oclEnabled && ((left.rows < 10) || (left.cols < 10))) {
+    if (! Matrix::oclEnabled || ((left.rows < 100) || (left.cols < 100))) {
 #endif
     
     for (size_t a = 0; a < left.rows; ++a)
@@ -241,7 +241,7 @@ Matrix& Matrix::operator-=(const Matrix& right) {
         throw SizeException("Size mismatch while substracting matrices!");
     
 #ifdef HAVE_OPENCL
-    if (Matrix::oclEnabled && ((right.rows < 10) || (right.cols < 10))) {
+    if (! Matrix::oclEnabled || ((right.rows < 100) || (right.cols < 100))) {
 #endif
         
     for (size_t a = 0; a < rows; ++a)
@@ -349,7 +349,7 @@ Matrix Matrix::operator*(const Matrix& right) const {
     }
     
 #ifdef HAVE_OPENCL
-    if (Matrix::oclEnabled && ((rows < 10) || (right.cols < 10))) {
+    if (! Matrix::oclEnabled || (rows < 10) || (right.cols < 10)) {
 #endif
         
     size_t b,c;
