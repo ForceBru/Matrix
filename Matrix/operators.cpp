@@ -6,6 +6,7 @@
 //
 
 #include <iostream>
+#include <memory>
 #include "Matrix.hpp"
 #include "util_ocl.hpp"
 
@@ -365,8 +366,8 @@ Matrix Matrix::operator*(const Matrix& right) const {
 #ifdef HAVE_OPENCL
     } else {
         cl_int write_err = CL_SUCCESS;
-        double *data = new double[rows * right.cols]();
-            // CL_MEM_COPY_HOST_PTR
+        std::unique_ptr<double> data(new double[rows * right.cols]);
+            
         cl::Buffer _left = cl::Buffer(Matrix::context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, this->M.size() * sizeof(double), (void *)this->M.data(), &write_err);
         
         if (check_cl_err(write_err)) {
@@ -383,7 +384,7 @@ Matrix Matrix::operator*(const Matrix& right) const {
         }
         write_err = CL_SUCCESS;
         
-        cl::Buffer _out = cl::Buffer(Matrix::context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, rows * right.cols * sizeof(double), data, &write_err);
+        cl::Buffer _out = cl::Buffer(Matrix::context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, rows * right.cols * sizeof(double), data.get(), &write_err);
         
         if (check_cl_err(write_err)) {
             std::cerr << "[!] Failed to create buffer, computation failed!" << std::endl;
@@ -394,6 +395,7 @@ Matrix Matrix::operator*(const Matrix& right) const {
         cl_int err = CL_SUCCESS;
         cl::Kernel kernel(Matrix::mult, "Matrix_mult", &err);
         
+        
         if (check_cl_err(err)) {
             std::cerr << "\n[!] Failed to create kernel, computation failed!" << std::endl;
             return res;
@@ -401,12 +403,14 @@ Matrix Matrix::operator*(const Matrix& right) const {
         
         kernel.setArg(0, _left), kernel.setArg(1, _right), kernel.setArg(2, _out), kernel.setArg(3, right.rows), kernel.setArg(4, rows), kernel.setArg(5, right.cols), kernel.setArg(6, cols);
         
-        cl::Event mult_done;
+        std::vector<cl::Event> mult_done(1);
+        
+        cl::Event e;
         
 #ifdef SLOW
         err = Matrix::queue.enqueueTask(kernel, NULL, &mult_done);
 #else
-        err = Matrix::queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(rows, right.cols), cl::NullRange, NULL, &mult_done);
+        err = Matrix::queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(rows, right.cols), cl::NullRange, 0, &e);
 #endif
         
         if (check_cl_err(err)) {
@@ -414,23 +418,24 @@ Matrix Matrix::operator*(const Matrix& right) const {
             return res;
         } err = CL_SUCCESS;
         
-        mult_done.wait();
+        e.wait();
+        
+        Matrix::queue.finish();
         
         
-        err = Matrix::queue.enqueueReadBuffer(_out, CL_TRUE, 0, rows * right.cols * sizeof(double), data);
+        //err = Matrix::queue.enqueueReadBuffer(_out, CL_TRUE, 0, rows * right.cols * sizeof(double), data.get());
+        cl::Event e2;
+        void *ret = Matrix::queue.enqueueMapBuffer(_out, CL_TRUE, CL_MAP_READ, 0, rows * right.cols * sizeof(double), NULL, &e2, &err);
         
         if (check_cl_err(err)) {
             std::cerr << "[!] Failed to read data from GPU, computation failed!" << std::endl;
             return res;
         } err = CL_SUCCESS;
         
-        Matrix::queue.finish();
+        e2.wait();
         
         
-            //res.M.assign(data, data + rows * right.cols);
-        res.M = std::vector<double>(data, data + rows * right.cols);
-        
-        delete[] data;
+        res.M = std::vector<double>((double *)ret, (double *)ret + rows * right.cols);
     }
 #endif
 

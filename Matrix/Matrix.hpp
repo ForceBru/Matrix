@@ -100,6 +100,7 @@ public:
 #endif
     
     Matrix();
+    Matrix(const Matrix& m);
     Matrix(const std::string fname);
     Matrix(const size_t rows, const size_t cols);
 
@@ -134,6 +135,7 @@ public:
     Matrix& clear();
     
     Matrix& Prettify();
+    Matrix& ShowMaxPrecision();
 
     friend Matrix exp (const Matrix&);
     friend Matrix sqr (const Matrix&);
@@ -199,8 +201,8 @@ public:
     }
     
     
-    friend std::ostream& operator<<(std::ostream& os, Matrix obj){
-        std::ios_base::fmtflags t=os.flags();
+    friend std::ostream& operator<<(std::ostream& os, const Matrix& obj){
+        const std::ios_base::fmtflags t=os.flags();
         if (obj.prettified)
             os << std::fixed << std::setprecision(3);
         else
@@ -216,7 +218,6 @@ public:
         }
         
         os.flags(t);
-        obj.prettified=false;
         return os;
     }
     

@@ -14,6 +14,7 @@
 #include <iostream>
 #include "cl.hpp"
 
+
 bool check_cl_err(cl_int);
 #endif
 

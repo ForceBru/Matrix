@@ -9,6 +9,7 @@
 #include "util_ocl.hpp"
 
 #ifdef HAVE_OPENCL
+
 bool check_cl_err(cl_int err) {
     switch (err) {
         case CL_INVALID_PROGRAM_EXECUTABLE:

@@ -54,6 +54,13 @@ Matrix::Matrix(const std::string fname) {
     }
 }
 
+Matrix::Matrix(const Matrix& m) {
+    rows = m.rows;
+    cols = m.cols;
+    M.assign(m.M.begin(), m.M.end());
+}
+
+
     //transpose a matrix
 Matrix Matrix::T() {
     
@@ -122,7 +129,12 @@ Matrix sqr(const Matrix& A) {
 
 
 Matrix& Matrix::Prettify() {
-    this->prettified=true;
+    this->prettified = 1;
+    return (*this);
+}
+
+Matrix& Matrix::ShowMaxPrecision() {
+    this->prettified = 0;
     return (*this);
 }
 
@@ -137,7 +149,7 @@ double Matrix::_Random(long min, long max) {
     
     return dis(gen);
 #else
-    return static_cast<double>(min) + static_cast<double>(rand()) / static_cast<double>(RAND_MAX/(max - min));
+    return double(min) + double(rand()) / double(RAND_MAX/(max - min));
 #endif
 }
 
@@ -337,8 +349,10 @@ bool Matrix::initOpenCL(std::string add_src, std::string sub_src, std::string mu
     if (platforms.empty()) return 0;
     
     for (auto plat: platforms) {
-        std::vector<cl::Device> GPUS;
+        std::vector<cl::Device> accelerators, GPUS;
+        plat.getDevices(CL_DEVICE_TYPE_ACCELERATOR, &accelerators);
         plat.getDevices(CL_DEVICE_TYPE_GPU, &GPUS);
+        devices.insert(devices.end(), accelerators.begin(), accelerators.end());
         devices.insert(devices.end(), GPUS.begin(), GPUS.end());
     }
     
@@ -358,7 +372,7 @@ bool Matrix::initOpenCL(std::string add_src, std::string sub_src, std::string mu
     
     if ((! add_file.good()) || (! mult_file.good()) || (! sub_file.good())) {
         std::cerr << "[!] Error opening source files!" << std::endl;
-       return 0;
+        return 0;
     }
     
     std::string   add_source(std::istreambuf_iterator<char>(add_file),(std::istreambuf_iterator<char>()));
@@ -373,8 +387,8 @@ bool Matrix::initOpenCL(std::string add_src, std::string sub_src, std::string mu
     cl::Program::Sources _mult = cl::Program::Sources(1, std::make_pair(mult_source.c_str(), mult_source.length()+1));
     
     
-    Matrix::add = cl::Program(Matrix::context, _add);
-    Matrix::sub = cl::Program(Matrix::context, _sub);
+    Matrix::add  = cl::Program(Matrix::context, _add);
+    Matrix::sub  = cl::Program(Matrix::context, _sub);
     Matrix::mult = cl::Program(Matrix::context, _mult);
     
     
@@ -400,6 +414,11 @@ bool Matrix::initOpenCL(std::string add_src, std::string sub_src, std::string mu
     }
     
     Matrix::oclEnabled = true;
+    
+    for (auto dev: Matrix::context.getInfo<CL_CONTEXT_DEVICES>())
+        std::cout << "Accelerator: " << dev.getInfo<CL_DEVICE_VENDOR>() << ' ' << dev.getInfo<CL_DEVICE_NAME>() << std::endl;
+    
+    std::cout << '\n' << std::endl;
     
     return 1;
 }
